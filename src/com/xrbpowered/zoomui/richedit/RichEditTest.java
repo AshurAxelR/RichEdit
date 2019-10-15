@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.xrbpowered.zoomui.GraphAssist;
-import com.xrbpowered.zoomui.UIContainer;
-import com.xrbpowered.zoomui.UIElement;
-import com.xrbpowered.zoomui.UIWindow;
+import com.xrbpowered.zoomui.menu.SwingPopup;
 import com.xrbpowered.zoomui.menu.UIMenu;
 import com.xrbpowered.zoomui.menu.UIMenuItem;
 import com.xrbpowered.zoomui.richedit.java.JavaContext;
@@ -48,13 +46,15 @@ public class RichEditTest {
 	}
 	
 	public static void main(String[] args) {
-		UIWindow frame = new SwingFrame(SwingWindowFactory.use(), "RichEditTest", 1600, 900, true, false) {
+		final SwingFrame frame = new SwingFrame(SwingWindowFactory.use(), "RichEditTest", 1600, 900, true, false) {
 			@Override
 			public boolean onClosing() {
 				confirmClosing();
 				return false;
 			}
 		};
+		
+		final SwingPopup popup = new SwingPopup(SwingWindowFactory.use());
 		
 		UIRichEditArea text = new UIRichEditArea(frame.getContainer()) {
 			@Override
@@ -65,7 +65,8 @@ public class RichEditTest {
 						if(button==Button.right) {
 							float bx = localToBaseX(x);
 							float by = localToBaseY(y);
-							showMenu(bx, by);
+							//showMenu(bx, by);
+							popup.show(frame.panel, bx, by);
 							return true;
 						}
 						else
@@ -82,7 +83,7 @@ public class RichEditTest {
 		text.editor.setTokeniser(new LineTokeniser(new JavaContext()));
 		text.editor.setText(loadString(TEST_INPUT));
 		
-		UIContainer overlay = new UIContainer(frame.getContainer()) {
+		/*UIContainer overlay = new UIContainer(frame.getContainer()) {
 			@Override
 			public boolean onMouseDown(float x, float y, Button button, int mods) {
 				if(menu.isVisible()) {
@@ -98,12 +99,12 @@ public class RichEditTest {
 				UIElement e = super.getElementAt(x, y);
 				return e==this ? null : e;
 			}
-		};
-		menu = new UIMenu(overlay);
+		};*/
+		menu = new UIMenu(popup.getContainer());
 		new UIMenuItem(menu, "Undo Typing");
 		new UIMenuItem(menu, "Redo Typing");
 		new UIMenuItem(menu, "Save");
-		menu.setVisible(false);
+		//menu.setVisible(false);
 		
 		frame.show();
 	}

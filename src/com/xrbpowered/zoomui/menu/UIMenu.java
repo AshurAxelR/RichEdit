@@ -1,6 +1,7 @@
 package com.xrbpowered.zoomui.menu;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 
 import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIContainer;
@@ -43,13 +44,19 @@ public class UIMenu extends UIContainer {
 	@Override
 	protected void paintChildren(GraphAssist g) {
 		super.paintChildren(g);
-		g.resetStroke();
-		g.border(this, colorBorder);
+		//g.resetStroke();
+		//g.border(this, colorBorder);
+		g.pixelBorder(this, 1, null, colorBorder);
 	}
 
 	@Override
 	public boolean onMouseDown(float x, float y, Button button, int mods) {
 		return true;
+	}
+	
+	@Override
+	public boolean isVisible(Rectangle clip) {
+		return isVisible();
 	}
 	
 }
