@@ -2,7 +2,6 @@ package com.xrbpowered.zoomui.menu;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
@@ -25,16 +24,7 @@ public class SwingPopup extends UIWindow {
 		popup.setBorder(BorderFactory.createEmptyBorder());
 		popup.setLayout(new BorderLayout());
 		
-		panel = new BasePanel(this) {
-			@Override
-			public void resize(int width, int height) {
-				float scale = window.getContainer().getBaseScale();
-				setPreferredSize(new Dimension((int)(width*scale), (int)(height*scale)));
-				popup.setPreferredSize(panel.getPreferredSize());
-				popup.invalidate(); // does not work. only resizes when popup re-opens
-				window.notifyResized();
-			}
-		};
+		panel = new BasePanel(this);
 		popup.add(panel, BorderLayout.CENTER);
 	}
 	
@@ -93,12 +83,11 @@ public class SwingPopup extends UIWindow {
 
 	@Override
 	public void center() {
-		//popup.setLocationRelativeTo(null);
 	}
 
 	@Override
 	public void show() {
-		//frame.setVisible(true);
+		throw new UnsupportedOperationException();
 	}
 	
 	public void show(BasePanel invoker, float x, float y) {
@@ -117,8 +106,6 @@ public class SwingPopup extends UIWindow {
 	
 	@Override
 	public void close() {
-		//frame.dispose();
-		//super.close();
 	}
 
 	@Override
