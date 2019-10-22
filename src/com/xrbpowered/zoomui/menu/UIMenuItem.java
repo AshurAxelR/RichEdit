@@ -24,16 +24,15 @@ public class UIMenuItem extends UIHoverElement {
 	
 	public String label;
 	
-	private float minWidth = marginLeft+marginRight;
-	
 	public UIMenuItem(UIContainer parent, String label) {
 		super(parent);
 		this.label = label;
-		setSize(minWidth, defaultHeight);
+		setSize(0, defaultHeight);
 	}
 	
 	public float getMinWidth() {
-		return minWidth;
+		FontMetrics fm = getBase().getWindow().getFontMetrics(font, font.getSize(), getPixelScale());
+		return fm.stringWidth(label)+marginLeft+marginRight;
 	}
 
 	@Override
@@ -47,13 +46,5 @@ public class UIMenuItem extends UIHoverElement {
 		}
 		g.setFont(font);
 		g.drawString(label, marginLeft, getHeight()/2f, GraphAssist.LEFT, GraphAssist.CENTER);
-		
-		FontMetrics fm = g.getFontMetrics();
-		float w = fm.stringWidth(label)+marginLeft+marginRight;
-		if(w!=minWidth) {
-			minWidth = w;
-			getParent().invalidateLayout();
-			repaint();
-		}
 	}
 }

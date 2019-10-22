@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.xrbpowered.zoomui.GraphAssist;
+import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.menu.SwingPopup;
 import com.xrbpowered.zoomui.menu.UIMenu;
 import com.xrbpowered.zoomui.menu.UIMenuItem;
@@ -55,22 +56,22 @@ public class RichEditTest {
 		};
 		
 		final SwingPopup popup = new SwingPopup(SwingWindowFactory.use());
+		popup.panel.setBorder(1, UIMenu.colorBorder);
 		
 		UIRichEditArea text = new UIRichEditArea(frame.getContainer()) {
 			@Override
 			protected UIRichEditBase createEditor() {
 				return new UIRichEditBase(getView(), false) {
 					@Override
-					public boolean onMouseDown(float x, float y, Button button, int mods) {
+					public boolean onMouseUp(float x, float y, Button button, int mods, UIElement initiator) {
 						if(button==Button.right) {
 							float bx = localToBaseX(x);
 							float by = localToBaseY(y);
-							//showMenu(bx, by);
 							popup.show(frame.panel, bx, by);
 							return true;
 						}
 						else
-							return super.onMouseDown(x, y, button, mods);
+							return super.onMouseUp(x, y, button, mods, initiator);
 					}
 				};
 			}
@@ -83,28 +84,11 @@ public class RichEditTest {
 		text.editor.setTokeniser(new LineTokeniser(new JavaContext()));
 		text.editor.setText(loadString(TEST_INPUT));
 		
-		/*UIContainer overlay = new UIContainer(frame.getContainer()) {
-			@Override
-			public boolean onMouseDown(float x, float y, Button button, int mods) {
-				if(menu.isVisible()) {
-					menu.setVisible(false);
-					repaint();
-					return true;
-				}
-				else
-					return false;
-			}
-			@Override
-			public UIElement getElementAt(float x, float y) {
-				UIElement e = super.getElementAt(x, y);
-				return e==this ? null : e;
-			}
-		};*/
 		menu = new UIMenu(popup.getContainer());
 		new UIMenuItem(menu, "Undo Typing");
 		new UIMenuItem(menu, "Redo Typing");
 		new UIMenuItem(menu, "Save");
-		//menu.setVisible(false);
+		popup.setClientSizeFor(menu);
 		
 		frame.show();
 	}

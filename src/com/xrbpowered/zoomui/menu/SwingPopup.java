@@ -2,12 +2,12 @@ package com.xrbpowered.zoomui.menu;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.FontMetrics;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 
-import com.xrbpowered.zoomui.BaseContainer;
-import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.UIWindow;
 import com.xrbpowered.zoomui.swing.BasePanel;
 import com.xrbpowered.zoomui.swing.SwingWindowFactory;
@@ -28,27 +28,8 @@ public class SwingPopup extends UIWindow {
 		popup.add(panel, BorderLayout.CENTER);
 	}
 	
-	@Override
-	protected BaseContainer createContainer() {
-		return new BaseContainer(this, factory.getBaseScale()) {
-			@Override
-			public void layout() {
-				if(children.isEmpty()) {
-					super.layout();
-					return;
-				}
-				UIElement c = children.get(0);
-				float cw = c.getWidth();
-				float ch = c.getHeight();
-				super.layout();
-				if(c.getWidth()!=cw || c.getHeight()!=ch) {
-					// System.out.printf("%.0f,%.0f != %.0f,%.0f\n", cw, ch, c.getWidth(), c.getHeight());
-					int w = (int)(c.getWidth());
-					int h = (int)(c.getHeight());
-					panel.resize(w, h);
-				}
-			}
-		};
+	public void setClientSizeFor(Measurable m) {
+		setClientSize((int)m.measureWidth(), (int)m.measureHeight());
 	}
 
 	@Override
@@ -126,6 +107,11 @@ public class SwingPopup extends UIWindow {
 	@Override
 	public float screenToBaseY(int y) {
 		return panel.screenToBaseY(y);
+	}
+
+	@Override
+	public FontMetrics getFontMetrics(Font font) {
+		return panel.getFontMetrics(font);
 	}
 
 }

@@ -8,7 +8,7 @@ import com.xrbpowered.zoomui.UIContainer;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.std.UIListBox;
 
-public class UIMenu extends UIContainer {
+public class UIMenu extends UIContainer implements Measurable {
 
 	public static Color colorBackground = new Color(0xf2f2f2);
 	public static Color colorBorder = UIListBox.colorBorder;
@@ -44,9 +44,6 @@ public class UIMenu extends UIContainer {
 	@Override
 	protected void paintChildren(GraphAssist g) {
 		super.paintChildren(g);
-		//g.resetStroke();
-		//g.border(this, colorBorder);
-		g.pixelBorder(this, 1, null, colorBorder);
 	}
 
 	@Override
@@ -59,4 +56,23 @@ public class UIMenu extends UIContainer {
 		return isVisible();
 	}
 	
+	public float measureWidth() {
+		float max = 0f;
+		for(UIElement c : children) {
+			UIMenuItem mi = (UIMenuItem) c;
+			float w = mi.getMinWidth();
+			if(w>max)
+				max = w;
+		}
+		return max;
+	}
+	
+	@Override
+	public float measureHeight() {
+		float y = 0f;
+		for(UIElement c : children) {
+			y += c.getHeight();
+		}
+		return y;
+	}
 }

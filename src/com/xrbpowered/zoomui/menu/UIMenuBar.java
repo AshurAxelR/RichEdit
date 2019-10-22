@@ -1,7 +1,7 @@
 package com.xrbpowered.zoomui.menu;
 
 import com.xrbpowered.zoomui.UIContainer;
-import com.xrbpowered.zoomui.UIElement;
+import com.xrbpowered.zoomui.base.UILayersContainer;
 
 public class UIMenuBar extends UIContainer {
 
@@ -10,16 +10,7 @@ public class UIMenuBar extends UIContainer {
 	
 	public UIMenuBar(UIContainer parent) {
 		super(parent);
-		this.content = new UIContainer(this) {
-			@Override
-			public void layout() {
-				for(UIElement c : children) {
-					c.setLocation(0, 0);
-					c.setSize(getWidth(), getHeight());
-					c.layout();
-				}
-			}
-		};
+		this.content = new UILayersContainer(this);
 		this.menu = new UIMenu(this);
 		setSize(0, UIMenuItem.defaultHeight);
 	}
