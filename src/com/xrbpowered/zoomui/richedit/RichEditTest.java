@@ -10,6 +10,7 @@ import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.menu.SwingPopup;
 import com.xrbpowered.zoomui.menu.UIMenu;
+import com.xrbpowered.zoomui.menu.UIMenuBar;
 import com.xrbpowered.zoomui.menu.UIMenuItem;
 import com.xrbpowered.zoomui.richedit.java.JavaContext;
 import com.xrbpowered.zoomui.swing.SwingFrame;
@@ -36,16 +37,6 @@ public class RichEditTest {
 		}
 	}
 	
-	private static UIMenu menu;
-	
-	public static void showMenu(float x, float y) {
-		x = menu.getParent().baseToLocalX(x);
-		y = menu.getParent().baseToLocalY(y);
-		menu.setLocation(x, y);
-		menu.setVisible(true);
-		menu.repaint();
-	}
-	
 	public static void main(String[] args) {
 		final SwingFrame frame = new SwingFrame(SwingWindowFactory.use(), "RichEditTest", 1600, 900, true, false) {
 			@Override
@@ -58,7 +49,15 @@ public class RichEditTest {
 		final SwingPopup popup = new SwingPopup(SwingWindowFactory.use());
 		popup.panel.setBorder(1, UIMenu.colorBorder);
 		
-		UIRichEditArea text = new UIRichEditArea(frame.getContainer()) {
+		UIMenuBar menuBar = new UIMenuBar(frame.getContainer());
+		UIMenu fileMenu = menuBar.addMenu(frame.panel, "File");
+		new UIMenuItem(fileMenu, "New");
+		new UIMenuItem(fileMenu, "Open...");
+		new UIMenuItem(fileMenu, "Save");
+		new UIMenuItem(fileMenu, "Save As...");
+		new UIMenuItem(fileMenu, "Exit");
+		
+		UIRichEditArea text = new UIRichEditArea(menuBar.content) {
 			@Override
 			protected UIRichEditBase createEditor() {
 				return new UIRichEditBase(getView(), false) {
@@ -84,7 +83,7 @@ public class RichEditTest {
 		text.editor.setTokeniser(new LineTokeniser(new JavaContext()));
 		text.editor.setText(loadString(TEST_INPUT));
 		
-		menu = new UIMenu(popup.getContainer());
+		UIMenu menu = new UIMenu(popup.getContainer());
 		new UIMenuItem(menu, "Undo Typing");
 		new UIMenuItem(menu, "Redo Typing");
 		new UIMenuItem(menu, "Save");

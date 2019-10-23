@@ -6,11 +6,11 @@ import java.awt.FontMetrics;
 
 import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIContainer;
-import com.xrbpowered.zoomui.base.UIHoverElement;
+import com.xrbpowered.zoomui.base.UIButtonBase;
 import com.xrbpowered.zoomui.std.UIButton;
 import com.xrbpowered.zoomui.std.text.UITextBox;
 
-public class UIMenuItem extends UIHoverElement {
+public class UIMenuItem extends UIButtonBase {
 
 	public static Font font = UIButton.font;
 	
@@ -32,7 +32,15 @@ public class UIMenuItem extends UIHoverElement {
 	
 	public float getMinWidth() {
 		FontMetrics fm = getBase().getWindow().getFontMetrics(font, font.getSize(), getPixelScale());
-		return fm.stringWidth(label)+marginLeft+marginRight;
+		return fm.stringWidth(label)+getTotalMargins();
+	}
+
+	public float getMarginLeft() {
+		return marginLeft;
+	}
+
+	public float getTotalMargins() {
+		return marginLeft+marginRight;
 	}
 
 	@Override
@@ -45,6 +53,6 @@ public class UIMenuItem extends UIHoverElement {
 			g.setColor(colorText);
 		}
 		g.setFont(font);
-		g.drawString(label, marginLeft, getHeight()/2f, GraphAssist.LEFT, GraphAssist.CENTER);
+		g.drawString(label, getMarginLeft(), getHeight()/2f, GraphAssist.LEFT, GraphAssist.CENTER);
 	}
 }

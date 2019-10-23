@@ -1218,7 +1218,7 @@ public class UIRichEditBase extends UIHoverElement implements KeyInputHandler {
 
 	@Override
 	public void onFocusLost() {
-		deselect();
+		//deselect();
 		repaint();
 	}
 

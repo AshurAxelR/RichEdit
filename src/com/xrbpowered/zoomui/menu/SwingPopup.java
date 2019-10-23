@@ -28,8 +28,11 @@ public class SwingPopup extends UIWindow {
 		popup.add(panel, BorderLayout.CENTER);
 	}
 	
-	public void setClientSizeFor(Measurable m) {
-		setClientSize((int)m.measureWidth(), (int)m.measureHeight());
+	public boolean setClientSizeFor(Measurable m) {
+		int w = (int)m.measureWidth();
+		int h = (int)m.measureHeight();
+		setClientSize(w, h);
+		return w>0 && h>0;
 	}
 
 	@Override
@@ -112,6 +115,10 @@ public class SwingPopup extends UIWindow {
 	@Override
 	public FontMetrics getFontMetrics(Font font) {
 		return panel.getFontMetrics(font);
+	}
+	
+	public boolean isVisible() {
+		return popup.isVisible();
 	}
 
 }

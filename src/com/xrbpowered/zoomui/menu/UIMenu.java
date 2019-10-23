@@ -40,11 +40,6 @@ public class UIMenu extends UIContainer implements Measurable {
 	protected void paintSelf(GraphAssist g) {
 		g.fill(this, colorBackground);
 	}
-	
-	@Override
-	protected void paintChildren(GraphAssist g) {
-		super.paintChildren(g);
-	}
 
 	@Override
 	public boolean onMouseDown(float x, float y, Button button, int mods) {
