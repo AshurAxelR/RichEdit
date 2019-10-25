@@ -21,6 +21,8 @@ public class UIMenu extends UIContainer implements Measurable {
 	public void layout() {
 		float max = 0f;
 		for(UIElement c : children) {
+			if(!(c instanceof UIMenuItem))
+				continue;
 			UIMenuItem mi = (UIMenuItem) c;
 			float w = mi.getMinWidth();
 			if(w>max)
@@ -54,6 +56,8 @@ public class UIMenu extends UIContainer implements Measurable {
 	public float measureWidth() {
 		float max = 0f;
 		for(UIElement c : children) {
+			if(!(c instanceof UIMenuItem))
+				continue;
 			UIMenuItem mi = (UIMenuItem) c;
 			float w = mi.getMinWidth();
 			if(w>max)

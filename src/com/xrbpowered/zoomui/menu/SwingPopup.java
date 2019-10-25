@@ -90,6 +90,7 @@ public class SwingPopup extends UIWindow {
 	
 	@Override
 	public void close() {
+		popup.setVisible(false);
 	}
 
 	@Override

@@ -5,7 +5,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 
 import com.xrbpowered.zoomui.GraphAssist;
-import com.xrbpowered.zoomui.UIContainer;
+import com.xrbpowered.zoomui.UIElement;
+import com.xrbpowered.zoomui.UIWindow;
 import com.xrbpowered.zoomui.base.UIButtonBase;
 import com.xrbpowered.zoomui.std.UIButton;
 import com.xrbpowered.zoomui.std.text.UITextBox;
@@ -15,6 +16,7 @@ public class UIMenuItem extends UIButtonBase {
 	public static Font font = UIButton.font;
 	
 	public static Color colorText = Color.BLACK;
+	public static Color colorDisabled = new Color(0x999999);
 	public static Color colorHover = UITextBox.colorSelection;
 	public static Color colorHoverText = UITextBox.colorSelectedText;
 
@@ -24,7 +26,7 @@ public class UIMenuItem extends UIButtonBase {
 	
 	public String label;
 	
-	public UIMenuItem(UIContainer parent, String label) {
+	public UIMenuItem(UIMenu parent, String label) {
 		super(parent);
 		this.label = label;
 		setSize(0, defaultHeight);
@@ -45,7 +47,10 @@ public class UIMenuItem extends UIButtonBase {
 
 	@Override
 	public void paint(GraphAssist g) {
-		if(hover) {
+		if(isDisabled()) {
+			g.setColor(colorDisabled);
+		}
+		else if(hover) {
 			g.fill(this, colorHover);
 			g.setColor(colorHoverText);
 		}
@@ -54,5 +59,28 @@ public class UIMenuItem extends UIButtonBase {
 		}
 		g.setFont(font);
 		g.drawString(label, getMarginLeft(), getHeight()/2f, GraphAssist.LEFT, GraphAssist.CENTER);
+	}
+	
+	@Override
+	public boolean onMouseDown(float x, float y, Button button, int mods) {
+		if(button==Button.left) {
+			if(isDisabled())
+				return true;
+			if(!isDisabled()) {
+				onAction();
+				UIWindow window = getBase().getWindow();
+				if(window instanceof SwingPopup)
+					window.close();
+			}
+			repaint();
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean onMouseUp(float x, float y, Button button, int mods, UIElement initiator) {
+		if(initiator!=this)
+			return false;
+		return true;
 	}
 }

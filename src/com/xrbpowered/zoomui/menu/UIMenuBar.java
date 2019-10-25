@@ -14,7 +14,7 @@ public class UIMenuBar extends UIContainer {
 	public static Color colorBackground = Color.WHITE;
 	public static float itemMargin = 8;
 
-	private class Bar extends UIMenu {
+	protected class Bar extends UIMenu {
 		public Bar() {
 			super(UIMenuBar.this);
 		}
@@ -35,7 +35,7 @@ public class UIMenuBar extends UIContainer {
 		}
 	}
 	
-	private class BarItem extends UIMenuItem {
+	protected class BarItem extends UIMenuItem {
 		public final BasePanel basePanel;
 		public final SwingPopup popup;
 		public final UIMenu menu;

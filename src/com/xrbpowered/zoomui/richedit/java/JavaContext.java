@@ -77,9 +77,10 @@ public class JavaContext extends TokeniserContext {
 				Pattern.compile("\\s+"),
 				Pattern.compile("\\/\\/"),
 				Pattern.compile("\\/\\*"),
-				Pattern.compile("\\\".*?\\\""),
-				Pattern.compile("\\\'.*?\\\'"),
+				Pattern.compile("\\\"((\\\\\\\")|.)*?\\\""),
+				Pattern.compile("\\\'((\\\\\\\')|.)*?\\\'"),
 				Pattern.compile("[A-Za-z][A-Za-z0-9_]+"),
+				Pattern.compile("0x[0-9a-fA-F]+"),
 				Pattern.compile("\\-?\\d*\\.?\\d+[FfLl]?"),
 				Pattern.compile(".")
 			});
@@ -101,6 +102,7 @@ public class JavaContext extends TokeniserContext {
 				return new StyleToken(index, identifier);
 			}
 			case 6:
+			case 7:
 				return new StyleToken(index, number);
 			default:
 				return new StyleToken(index, null);

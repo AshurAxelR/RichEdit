@@ -277,6 +277,7 @@ public class UIRichEditBase extends UIHoverElement implements KeyInputHandler {
 		if(resetHistory) {
 			history.clear();
 			history.push();
+			panView().setPan(0, 0);
 		}
 	}
 	
