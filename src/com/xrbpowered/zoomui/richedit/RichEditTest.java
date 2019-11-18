@@ -56,8 +56,8 @@ public class RichEditTest {
 
 		final UIRichEditArea text = new UIRichEditArea(menuBar.content) {
 			@Override
-			protected UIRichEditBase createEditor() {
-				return new UIRichEditBase(getView(), false) {
+			protected UIRichEdit createEditor() {
+				return new UIRichEdit(getView(), false) {
 					@Override
 					public boolean onMouseUp(float x, float y, Button button, int mods, UIElement initiator) {
 						if(button==Button.right) {

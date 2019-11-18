@@ -5,15 +5,15 @@ import com.xrbpowered.zoomui.std.UIScrollContainer;
 
 public class UIRichEditArea extends UIScrollContainer {
 
-	public final UIRichEditBase editor;
+	public final UIRichEdit editor;
 	
 	public UIRichEditArea(UIContainer parent) {
 		super(parent);
 		editor = createEditor();
 	}
 	
-	protected UIRichEditBase createEditor() {
-		return new UIRichEditBase(getView(), false);
+	protected UIRichEdit createEditor() {
+		return new UIRichEdit(getView(), false);
 	}
 	
 	@Override
