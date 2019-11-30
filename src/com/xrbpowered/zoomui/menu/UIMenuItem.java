@@ -45,6 +45,10 @@ public class UIMenuItem extends UIButtonBase {
 		return marginLeft+marginRight;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+	
 	@Override
 	public void paint(GraphAssist g) {
 		if(isDisabled()) {
@@ -58,7 +62,7 @@ public class UIMenuItem extends UIButtonBase {
 			g.setColor(colorText);
 		}
 		g.setFont(font);
-		g.drawString(label, getMarginLeft(), getHeight()/2f, GraphAssist.LEFT, GraphAssist.CENTER);
+		g.drawString(getLabel(), getMarginLeft(), getHeight()/2f, GraphAssist.LEFT, GraphAssist.CENTER);
 	}
 	
 	@Override

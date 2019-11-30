@@ -63,6 +63,7 @@ public class RichEditTest {
 						if(button==Button.right) {
 							float bx = localToBaseX(x);
 							float by = localToBaseY(y);
+							editor.checkPushHistory();
 							popup.show(frame.panel, bx, by);
 							return true;
 						}
@@ -117,9 +118,36 @@ public class RichEditTest {
 		};
 
 		UIMenu menu = new UIMenu(popup.getContainer());
-		new UIMenuItem(menu, "Undo Typing");
-		new UIMenuItem(menu, "Redo Typing");
-		new UIMenuItem(menu, "Save");
+		new UIMenuItem(menu, "Undo") {
+			@Override
+			public boolean isEnabled() {
+				return text.editor.history.canUndo();
+			}
+			@Override
+			public boolean isDisabled() {
+				return !isEnabled();
+			}
+			@Override
+			public void onAction() {
+				text.editor.history.undo();
+				text.repaint();
+			}
+		};
+		new UIMenuItem(menu, "Redo") {
+			@Override
+			public boolean isEnabled() {
+				return text.editor.history.canRedo();
+			}
+			@Override
+			public boolean isDisabled() {
+				return !isEnabled();
+			}
+			@Override
+			public void onAction() {
+				text.editor.history.redo();
+				text.repaint();
+			}
+		};
 		popup.setClientSizeFor(menu);
 		
 		frame.show();

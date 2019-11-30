@@ -829,6 +829,10 @@ public class UITextEditBase<L extends UITextEditBase<L>.Line> extends UIHoverEle
 		}
 	}
 	
+	public void checkPushHistory() {
+		checkPushHistory(HistoryAction.unspecified);
+	}
+	
 	protected boolean isCursorAtWordBoundary() {
 		checkCursorLineCache();
 		if(cursor.col==0 || cursor.col==cursorLine.length)
@@ -1079,27 +1083,27 @@ public class UITextEditBase<L extends UITextEditBase<L>.Line> extends UIHoverEle
 				if(modifiers==UIElement.modCtrlMask) {
 					switch(code) {
 						case KeyEvent.VK_A:
-							checkPushHistory(HistoryAction.unspecified);
+							checkPushHistory();
 							selectAll();
 							break;
 						case KeyEvent.VK_X:
-							checkPushHistory(HistoryAction.unspecified);
+							checkPushHistory();
 							cutSelection();
 							break;
 						case KeyEvent.VK_C:
-							checkPushHistory(HistoryAction.unspecified);
+							checkPushHistory();
 							copySelection();
 							break;
 						case KeyEvent.VK_V:
-							checkPushHistory(HistoryAction.unspecified);
+							checkPushHistory();
 							pasteAtCursor();
 							break;
 						case KeyEvent.VK_Z:
-							checkPushHistory(HistoryAction.unspecified);
+							checkPushHistory();
 							history.undo();
 							break;
 						case KeyEvent.VK_Y:
-							checkPushHistory(HistoryAction.unspecified);
+							checkPushHistory();
 							history.redo();
 							break;
 					}
