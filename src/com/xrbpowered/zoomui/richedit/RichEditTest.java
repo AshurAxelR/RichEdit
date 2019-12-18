@@ -124,10 +124,6 @@ public class RichEditTest {
 				return text.editor.history.canUndo();
 			}
 			@Override
-			public boolean isDisabled() {
-				return !isEnabled();
-			}
-			@Override
 			public void onAction() {
 				text.editor.history.undo();
 				text.repaint();
@@ -137,10 +133,6 @@ public class RichEditTest {
 			@Override
 			public boolean isEnabled() {
 				return text.editor.history.canRedo();
-			}
-			@Override
-			public boolean isDisabled() {
-				return !isEnabled();
 			}
 			@Override
 			public void onAction() {

@@ -51,7 +51,7 @@ public class UIMenuItem extends UIButtonBase {
 	
 	@Override
 	public void paint(GraphAssist g) {
-		if(isDisabled()) {
+		if(!isEnabled()) {
 			g.setColor(colorDisabled);
 		}
 		else if(hover) {
@@ -68,9 +68,7 @@ public class UIMenuItem extends UIButtonBase {
 	@Override
 	public boolean onMouseDown(float x, float y, Button button, int mods) {
 		if(button==Button.left) {
-			if(isDisabled())
-				return true;
-			if(!isDisabled()) {
+			if(isEnabled()) {
 				onAction();
 				UIWindow window = getBase().getWindow();
 				if(window instanceof SwingPopup)
