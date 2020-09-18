@@ -18,7 +18,9 @@ public class UIMenuSeparator extends UIElement {
 
 	@Override
 	public void paint(GraphAssist g) {
+		g.pushPureStroke(false);
 		g.line(0, margin+1, getWidth(), margin+1, color);
+		g.popPureStroke();
 	}
 
 }

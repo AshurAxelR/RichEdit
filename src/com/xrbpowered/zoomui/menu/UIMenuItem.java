@@ -10,6 +10,7 @@ import com.xrbpowered.zoomui.UIWindow;
 import com.xrbpowered.zoomui.base.UIButtonBase;
 import com.xrbpowered.zoomui.std.UIButton;
 import com.xrbpowered.zoomui.std.text.UITextBox;
+import com.xrbpowered.zoomui.swing.SwingPopup;
 
 public class UIMenuItem extends UIButtonBase {
 
@@ -71,7 +72,7 @@ public class UIMenuItem extends UIButtonBase {
 			if(isEnabled()) {
 				onAction();
 				UIWindow window = getBase().getWindow();
-				if(window instanceof SwingPopup)
+				if(window instanceof SwingPopup) // FIXME swing-specific code
 					window.close();
 			}
 			repaint();

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 
 import com.xrbpowered.zoomui.GraphAssist;
+import com.xrbpowered.zoomui.Measurable;
 import com.xrbpowered.zoomui.UIContainer;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.std.UIListBox;
@@ -42,7 +43,7 @@ public class UIMenu extends UIContainer implements Measurable {
 	protected void paintSelf(GraphAssist g) {
 		g.fill(this, colorBackground);
 	}
-
+	
 	@Override
 	public boolean onMouseDown(float x, float y, Button button, int mods) {
 		return true;

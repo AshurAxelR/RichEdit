@@ -5,9 +5,11 @@ import java.awt.Color;
 import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIContainer;
 import com.xrbpowered.zoomui.UIElement;
+import com.xrbpowered.zoomui.UIPopupWindow;
+import com.xrbpowered.zoomui.UIWindowFactory;
 import com.xrbpowered.zoomui.base.UILayersContainer;
 import com.xrbpowered.zoomui.swing.BasePanel;
-import com.xrbpowered.zoomui.swing.SwingWindowFactory;
+import com.xrbpowered.zoomui.swing.SwingPopup;
 
 public class UIMenuBar extends UIContainer {
 
@@ -37,14 +39,15 @@ public class UIMenuBar extends UIContainer {
 	
 	protected class BarItem extends UIMenuItem {
 		public final BasePanel basePanel;
-		public final SwingPopup popup;
+		public final UIPopupWindow popup;
 		public final UIMenu menu;
 		
-		public BarItem(BasePanel basePanel, String label) {
+		public BarItem(BasePanel basePanel, final String label) {
 			super(bar, label);
 			this.basePanel = basePanel;
-			popup = new SwingPopup((SwingWindowFactory)bar.getBase().getWindow().getFactory());
-			popup.panel.setBorder(1, UIMenu.colorBorder);
+			popup = UIWindowFactory.instance.createPopup();
+			if(popup instanceof SwingPopup)
+				((SwingPopup) popup).panel.setBorder(1, UIMenu.colorBorder); // FIXME swing-specific popup menu border
 			menu = new UIMenu(popup.getContainer());
 		}
 		@Override
@@ -57,11 +60,12 @@ public class UIMenuBar extends UIContainer {
 		}
 		@Override
 		public void onAction() {
-			// FIXME popup.isVisible() is always false here. Second click should hide the popup.
-			if(popup.setClientSizeFor(menu)) {
+			// reqiures UIManager.PopupMenu.consumeEventOnClose=true for SwingPopup to work,
+			// otherwise the same click even will dismiss the popup and instantly call onAction() to reopen it again 
+			if(popup.setClientSizeToContent()) {
 				float bx = localToBaseX(0);
 				float by = localToBaseY(getHeight());
-				popup.show(basePanel, bx, by);
+				popup.show(getBase().getWindow(), bx, by);
 			}
 		}
 	}

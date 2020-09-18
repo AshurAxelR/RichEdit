@@ -11,7 +11,6 @@ import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.UIModalWindow;
 import com.xrbpowered.zoomui.UIModalWindow.ResultHandler;
-import com.xrbpowered.zoomui.menu.SwingPopup;
 import com.xrbpowered.zoomui.menu.UIMenu;
 import com.xrbpowered.zoomui.menu.UIMenuBar;
 import com.xrbpowered.zoomui.menu.UIMenuItem;
@@ -19,6 +18,7 @@ import com.xrbpowered.zoomui.menu.UIMenuSeparator;
 import com.xrbpowered.zoomui.richedit.java.JavaContext;
 import com.xrbpowered.zoomui.std.file.UIFileBrowser;
 import com.xrbpowered.zoomui.swing.SwingFrame;
+import com.xrbpowered.zoomui.swing.SwingPopup;
 import com.xrbpowered.zoomui.swing.SwingWindowFactory;
 
 public class RichEditTest {
@@ -64,7 +64,7 @@ public class RichEditTest {
 							float bx = localToBaseX(x);
 							float by = localToBaseY(y);
 							editor.checkPushHistory();
-							popup.show(frame.panel, bx, by);
+							popup.show(frame, bx, by);
 							return true;
 						}
 						else
@@ -140,7 +140,7 @@ public class RichEditTest {
 				text.repaint();
 			}
 		};
-		popup.setClientSizeFor(menu);
+		popup.setClientSizeToContent();
 		
 		frame.show();
 	}
