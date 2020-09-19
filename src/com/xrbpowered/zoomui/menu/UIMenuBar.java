@@ -8,8 +8,6 @@ import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.UIPopupWindow;
 import com.xrbpowered.zoomui.UIWindowFactory;
 import com.xrbpowered.zoomui.base.UILayersContainer;
-import com.xrbpowered.zoomui.swing.BasePanel;
-import com.xrbpowered.zoomui.swing.SwingPopup;
 
 public class UIMenuBar extends UIContainer {
 
@@ -38,16 +36,13 @@ public class UIMenuBar extends UIContainer {
 	}
 	
 	protected class BarItem extends UIMenuItem {
-		public final BasePanel basePanel;
 		public final UIPopupWindow popup;
 		public final UIMenu menu;
 		
-		public BarItem(BasePanel basePanel, final String label) {
+		public BarItem(final String label) {
 			super(bar, label);
-			this.basePanel = basePanel;
 			popup = UIWindowFactory.instance.createPopup();
-			if(popup instanceof SwingPopup)
-				((SwingPopup) popup).panel.setBorder(1, UIMenu.colorBorder); // FIXME swing-specific popup menu border
+			popup.getContainer().setClientBorder(1, UIMenu.colorBorder);
 			menu = new UIMenu(popup.getContainer());
 		}
 		@Override
@@ -80,8 +75,8 @@ public class UIMenuBar extends UIContainer {
 		bar.setSize(0, UIMenuItem.defaultHeight);
 	}
 	
-	public UIMenu addMenu(BasePanel basePanel, String title) {
-		return new BarItem(basePanel, title).menu;
+	public UIMenu addMenu(String title) {
+		return new BarItem(title).menu;
 	}
 	
 	@Override

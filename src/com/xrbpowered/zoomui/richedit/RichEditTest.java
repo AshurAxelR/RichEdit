@@ -1,6 +1,9 @@
 package com.xrbpowered.zoomui.richedit;
 
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +43,85 @@ public class RichEditTest {
 		}
 	}
 	
+	private static void addEditMenuItems(final UIMenu menu, final UIRichEditArea text) {
+		new UIMenuItem(menu, "Undo") {
+			@Override
+			public boolean isEnabled() {
+				return text.editor.history.canUndo();
+			}
+			@Override
+			public void onAction() {
+				text.editor.history.undo();
+				text.repaint();
+			}
+		};
+		new UIMenuItem(menu, "Redo") {
+			@Override
+			public boolean isEnabled() {
+				return text.editor.history.canRedo();
+			}
+			@Override
+			public void onAction() {
+				text.editor.history.redo();
+				text.repaint();
+			}
+		};
+		new UIMenuSeparator(menu);
+		new UIMenuItem(menu, "Cut") {
+			@Override
+			public boolean isEnabled() {
+				return text.editor.hasSelection();
+			}
+			@Override
+			public void onAction() {
+				text.editor.cutSelection();
+				text.repaint();
+			}
+		};
+		new UIMenuItem(menu, "Copy") {
+			@Override
+			public boolean isEnabled() {
+				return text.editor.hasSelection();
+			}
+			@Override
+			public void onAction() {
+				text.editor.copySelection();
+				text.repaint();
+			}
+		};
+		new UIMenuItem(menu, "Paste") {
+			@Override
+			public boolean isEnabled() {
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				return clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor);
+			}
+			@Override
+			public void onAction() {
+				text.editor.pasteAtCursor();
+				text.repaint();
+			}
+		};
+		new UIMenuSeparator(menu);
+		new UIMenuItem(menu, "Delete") {
+			@Override
+			public boolean isEnabled() {
+				return text.editor.hasSelection();
+			}
+			@Override
+			public void onAction() {
+				text.editor.deleteSelection();
+				text.repaint();
+			}
+		};
+		new UIMenuItem(menu, "Select All") {
+			@Override
+			public void onAction() {
+				text.editor.selectAll();
+				text.repaint();
+			}
+		};
+	}
+	
 	public static void main(String[] args) {
 		final SwingFrame frame = new SwingFrame(SwingWindowFactory.use(), "RichEditTest", 1600, 900, true, false) {
 			@Override
@@ -50,7 +132,7 @@ public class RichEditTest {
 		};
 		
 		final SwingPopup popup = new SwingPopup(SwingWindowFactory.use());
-		popup.panel.setBorder(1, UIMenu.colorBorder);
+		popup.getContainer().setClientBorder(1, UIMenu.colorBorder);
 
 		UIMenuBar menuBar = new UIMenuBar(frame.getContainer());
 
@@ -92,7 +174,7 @@ public class RichEditTest {
 		};
 		new UIFileBrowser(openDlg.getContainer(), openDlg.wrapInResultHandler());
 		
-		UIMenu fileMenu = menuBar.addMenu(frame.panel, "File");
+		UIMenu fileMenu = menuBar.addMenu("File");
 		new UIMenuItem(fileMenu, "New") {
 			@Override
 			public void onAction() {
@@ -116,30 +198,11 @@ public class RichEditTest {
 				frame.requestClosing();
 			}
 		};
+		
+		UIMenu editMenu = menuBar.addMenu("Edit");
+		addEditMenuItems(editMenu, text);
 
-		UIMenu menu = new UIMenu(popup.getContainer());
-		new UIMenuItem(menu, "Undo") {
-			@Override
-			public boolean isEnabled() {
-				return text.editor.history.canUndo();
-			}
-			@Override
-			public void onAction() {
-				text.editor.history.undo();
-				text.repaint();
-			}
-		};
-		new UIMenuItem(menu, "Redo") {
-			@Override
-			public boolean isEnabled() {
-				return text.editor.history.canRedo();
-			}
-			@Override
-			public void onAction() {
-				text.editor.history.redo();
-				text.repaint();
-			}
-		};
+		addEditMenuItems(new UIMenu(popup.getContainer()), text);
 		popup.setClientSizeToContent();
 		
 		frame.show();

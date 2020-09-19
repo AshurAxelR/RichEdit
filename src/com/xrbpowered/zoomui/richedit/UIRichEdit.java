@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.base.UIPanView;
+import com.xrbpowered.zoomui.base.UITextEditBase;
 
 public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 	
