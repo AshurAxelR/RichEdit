@@ -14,12 +14,12 @@ import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.UIModalWindow;
 import com.xrbpowered.zoomui.UIModalWindow.ResultHandler;
-import com.xrbpowered.zoomui.menu.UIMenu;
-import com.xrbpowered.zoomui.menu.UIMenuBar;
-import com.xrbpowered.zoomui.menu.UIMenuItem;
-import com.xrbpowered.zoomui.menu.UIMenuSeparator;
 import com.xrbpowered.zoomui.richedit.java.JavaContext;
 import com.xrbpowered.zoomui.std.file.UIFileBrowser;
+import com.xrbpowered.zoomui.std.menu.UIMenu;
+import com.xrbpowered.zoomui.std.menu.UIMenuBar;
+import com.xrbpowered.zoomui.std.menu.UIMenuItem;
+import com.xrbpowered.zoomui.std.menu.UIMenuSeparator;
 import com.xrbpowered.zoomui.swing.SwingFrame;
 import com.xrbpowered.zoomui.swing.SwingPopup;
 import com.xrbpowered.zoomui.swing.SwingWindowFactory;
@@ -160,13 +160,14 @@ public class RichEditTest {
 			}
 		};
 		text.editor.setFont(new Font("Verdana", Font.PLAIN, 10), 10f);
-		text.editor.setTokeniser(new LineTokeniser(new JavaContext()));
+		text.editor.setTokeniser(null);
 
 		final UIModalWindow<File> openDlg = SwingWindowFactory.use().createModal("Open file", 840, 480, true, null);
 		openDlg.onResult = new ResultHandler<File>() {
 			@Override
 			public void onResult(File result) {
 				text.editor.setText(loadString(result));
+				text.editor.setTokeniser(result.getName().toLowerCase().endsWith(".java") ? new LineTokeniser(new JavaContext()) : null);
 			}
 			@Override
 			public void onCancel() {
