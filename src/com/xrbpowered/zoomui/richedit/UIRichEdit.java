@@ -9,6 +9,9 @@ import com.xrbpowered.zoomui.base.UITextEditBase;
 
 public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 	
+	public Color colorMargin = new Color(0xeeeeee);
+	public Color colorMarginText = new Color(0xaaaaaa);
+	
 	public class Line extends UITextEditBase<Line>.Line {
 		public int offs, length;
 		public int width = -1;
@@ -33,6 +36,7 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 	}
 	
 	protected LineTokeniser tokeniser = new LineTokeniser(null);
+	protected int xmargin; 
 	
 	public UIRichEdit(UIPanView parent, boolean singleLine) {
 		super(parent, singleLine);
@@ -53,6 +57,25 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 	}
 	
 	@Override
+	protected void updateMetrics(GraphAssist g, float fontSize) {
+		super.updateMetrics(g, fontSize);
+		
+		int d = 9;
+		while(d<lines.size())
+			d = d*10+9;
+		
+		xmargin = fm[0].stringWidth(Integer.toString(d))+(int)(8/pixelScale);
+		x0 = xmargin+(int)(4/pixelScale);
+	}
+	
+	protected void fillRemainder(GraphAssist g, int y) {
+		super.fillRemainder(g, y);
+		g.fillRect(0, y-lineHeight+descent, xmargin, maxy-y+lineHeight-descent, colorMargin);
+		g.setStroke(1/pixelScale);
+		g.line(xmargin, y-lineHeight+descent, xmargin, maxy, colorMarginText);
+	}
+	
+	@Override
 	protected void drawLine(GraphAssist g, int lineIndex, int lineStart, int lineEnd, int y, Color bg, boolean drawCursor, Line line) {
 		if(line.tokens==null) {
 			TokeniserContext context = (lineIndex>0) ? lines.get(lineIndex-1).nextContext() : line.context;
@@ -63,6 +86,14 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 					nextLine.tokens = null;
 			}
 		}
+		
+		g.fillRect(0, y-lineHeight+descent, xmargin, lineHeight, colorMargin);
+		g.setStroke(1/pixelScale);
+		g.line(xmargin, y-lineHeight+descent, xmargin, y+descent, colorMarginText);
+		g.setFont(fonts[0]);
+		g.setColor(colorMarginText);
+		g.drawString(Integer.toString(lineIndex+1), xmargin-4/pixelScale, y, GraphAssist.RIGHT, GraphAssist.BOTTOM);
+		
 		super.drawLine(g, lineIndex, lineStart, lineEnd, y, bg, drawCursor, line);
 	}
 
@@ -78,8 +109,6 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 				stnext = tokens.get(ls.s+1);
 				cn = stnext.start+ls.lineStart;
 			}
-			//StyleToken stnext = tokens.get(ls.s+1);
-			//int cn = stnext.start+ls.lineStart;
 			if(cn>=c1) {
 				drawText(g, ls, col, c1, st.getBg(colorBackground, bg), st.getFg(colorText, fg), st.getFont());
 				return;
@@ -108,8 +137,6 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 				stnext = line.tokens.get(s+1);
 				cn = stnext.start+lineStart;
 			}
-			//StyleToken stnext = tokens.get(s+1);
-			//int cn = stnext.start+lineStart;
 			if(cn>=c1) {
 				x += stringWidth(col, c1, st.getFont());
 				return x;
