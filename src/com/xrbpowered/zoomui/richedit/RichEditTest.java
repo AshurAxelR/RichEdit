@@ -14,7 +14,8 @@ import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.UIModalWindow;
 import com.xrbpowered.zoomui.UIModalWindow.ResultHandler;
-import com.xrbpowered.zoomui.richedit.java.JavaContext;
+import com.xrbpowered.zoomui.richedit.syntax.JavaContext;
+import com.xrbpowered.zoomui.richedit.syntax.XmlContext;
 import com.xrbpowered.zoomui.std.file.UIFileBrowser;
 import com.xrbpowered.zoomui.std.menu.UIMenu;
 import com.xrbpowered.zoomui.std.menu.UIMenuBar;
@@ -167,7 +168,15 @@ public class RichEditTest {
 			@Override
 			public void onResult(File result) {
 				text.editor.setText(loadString(result));
-				text.editor.setTokeniser(result.getName().toLowerCase().endsWith(".java") ? new LineTokeniser(new JavaContext()) : null);
+				String filename = result.getName().toLowerCase();
+				LineTokeniser t;
+				if(filename.endsWith(".java"))
+					t = new LineTokeniser(new JavaContext());
+				else if(filename.endsWith(".xml") || filename.endsWith(".html") || filename.endsWith(".htm") || filename.endsWith(".svg"))
+					t = new LineTokeniser(new XmlContext());
+				else
+					t = null;
+				text.editor.setTokeniser(t);
 			}
 			@Override
 			public void onCancel() {
@@ -202,6 +211,33 @@ public class RichEditTest {
 		
 		UIMenu editMenu = menuBar.addMenu("Edit");
 		addEditMenuItems(editMenu, text);
+
+		UIMenu syntaxMenu = menuBar.addMenu("Syntax");
+		new UIMenuItem(syntaxMenu, "Plain text") {
+			@Override
+			public void onAction() {
+				text.editor.setTokeniser(null);
+				text.editor.resetAllLines();
+				text.repaint();
+			}
+		};
+		new UIMenuSeparator(syntaxMenu);
+		new UIMenuItem(syntaxMenu, "Java") {
+			@Override
+			public void onAction() {
+				text.editor.setTokeniser(new LineTokeniser(new JavaContext()));
+				text.editor.resetAllLines();
+				text.repaint();
+			}
+		};
+		new UIMenuItem(syntaxMenu, "XML/HTML") {
+			@Override
+			public void onAction() {
+				text.editor.setTokeniser(new LineTokeniser(new XmlContext()));
+				text.editor.resetAllLines();
+				text.repaint();
+			}
+		};
 
 		addEditMenuItems(new UIMenu(popup.getContainer()), text);
 		popup.setClientSizeToContent();

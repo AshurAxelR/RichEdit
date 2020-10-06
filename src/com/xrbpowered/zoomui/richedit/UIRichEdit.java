@@ -46,6 +46,11 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 	protected Line createLine() {
 		return (Line) new Line();
 	}
+
+	public void resetAllLines() {
+		for(Line line : lines)
+			line.reset();
+	}
 	
 	public void setTokeniser(LineTokeniser tokeniser) {
 		this.tokeniser = (tokeniser==null) ? new LineTokeniser(null) : tokeniser;

@@ -1,4 +1,4 @@
-package com.xrbpowered.zoomui.richedit.java;
+package com.xrbpowered.zoomui.richedit.syntax;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -12,7 +12,6 @@ import com.xrbpowered.zoomui.richedit.StyleToken.Style;
 
 public class JavaContext extends TokeniserContext {
 
-	public static Style plain = new Style(null);
 	public static Style comment = new Style(new Color(0x007755));
 	public static Style string = new Style(new Color(0x0000ff));
 	public static Style keyword = new Style(new Color(0x770055), null, Font.BOLD);
