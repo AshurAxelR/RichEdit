@@ -19,18 +19,19 @@ public class LineTokeniser {
 		if(index>=end)
 			return null;
 		
-		Matcher[] matchers = context.matchers;
+		int matchers = context.ruleCount();
 		int match = -1;
-		for(int i=0; i<matchers.length; i++) {
-			matchers[i].region(index, end);
-			if(matchers[i].lookingAt()) {
+		for(int i=0; i<matchers; i++) {
+			Matcher m = context.matcher(i);
+			m.region(index, end);
+			if(m.lookingAt()) {
 				match = i;
 				break;
 			}
 		}
 		if(match>=0) {
 			StyleToken t = context.evaluateToken(index, match);
-			index = matchers[match].end();
+			index = context.matcher(match).end();
 			return t;
 		}
 		else

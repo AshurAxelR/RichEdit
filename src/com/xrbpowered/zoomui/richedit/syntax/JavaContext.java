@@ -4,57 +4,54 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.regex.Pattern;
 
 import com.xrbpowered.zoomui.richedit.StyleToken;
-import com.xrbpowered.zoomui.richedit.TokeniserContext;
 import com.xrbpowered.zoomui.richedit.StyleToken.Style;
+import com.xrbpowered.zoomui.richedit.StyleTokenProvider;
+import com.xrbpowered.zoomui.richedit.TokeniserContext;
 
 public class JavaContext extends TokeniserContext {
 
-	public static Style comment = new Style(new Color(0x007755));
+	public static Style comment = new Style(new Color(0x007744));
 	public static Style string = new Style(new Color(0x0000ff));
 	public static Style keyword = new Style(new Color(0x770055), null, Font.BOLD);
 	public static Style number = new Style(new Color(0x777777));
 	public static Style identifier = new Style(null);
 	public static Style todo = new Style(new Color(0x7799bb), null, Font.BOLD);
 
-	public TokeniserContext multilineCommentContext = new TokeniserContext(new Pattern[] {
-			Pattern.compile("\\*\\/"),
-			Pattern.compile("(TODO)|(FIXME)"),
-			Pattern.compile(".")
-		}) {
-		@Override
-		protected StyleToken evaluateToken(int index, int match) {
-			switch(match) {
-				case 0:
-					return new StyleToken(index, comment);
-				case 1:
-					return new StyleToken(index, todo, this);
-				default:
-					return new StyleToken(index, comment, this);
+	public JavaContext() {
+		addPlain("\\s+");
+		add("\\/\\/", comment, commentContext);
+		add("\\/\\*", comment, multilineCommentContext);
+		add("\\\"((\\\\\\\")|.)*?\\\"", string);
+		add("\\\'((\\\\\\\')|.)*?\\\'", string);
+		add("[A-Za-z][A-Za-z0-9_]+", new StyleTokenProvider() {
+			@Override
+			public StyleToken evaluateToken(int index, int match) {
+				if(keywords.contains(raw(match)))
+					return new StyleToken(index, keyword);
+				return new StyleToken(index, identifier);
 			}
-		}
-	};
+		});
+		add("0x[0-9a-fA-F]+", number);
+		add("\\-?\\d*\\.?\\d+[FfLl]?", number);
+		addPlain(".");
+	}
 
-	public TokeniserContext commentContext = new TokeniserContext.SingleLine(new Pattern[] {
-			Pattern.compile("(TODO)|(FIXME)"),
-			Pattern.compile(".")
-		}) {
-		@Override
-		protected StyleToken evaluateToken(int index, int match) {
-			switch(match) {
-				case 0:
-					return new StyleToken(index, todo, this);
-				default:
-					return new StyleToken(index, comment, this);
-			}
-		}
-	};
+	private static TokeniserContext multilineCommentContext = new TokeniserContext() {{
+		add("\\*\\/", comment);
+		add("(TODO)|(FIXME)", todo, this);
+		add(".", comment, this);
+	}};
 
-	public static final HashSet<String> KEYWORD_MAP = new HashSet<>();
+	private static TokeniserContext commentContext = new TokeniserContext.SingleLine() {{
+		add("(TODO)|(FIXME)", todo, this);
+		add(".", comment, this);
+	}};
+
+	private static final HashSet<String> keywords = new HashSet<>();
 	static {
-		KEYWORD_MAP.addAll(Arrays.asList(new String[] {
+		keywords.addAll(Arrays.asList(new String[] {
 			"abstract", "continue", "for", "new", "switch",
 			"assert", "default", "goto", "package", "synchronized",
 			"boolean", "do", "if", "private", "this",
@@ -69,40 +66,4 @@ public class JavaContext extends TokeniserContext {
 		}));
 	}
 	
-	public JavaContext() {
-		super(new Pattern[] {
-				Pattern.compile("\\s+"),
-				Pattern.compile("\\/\\/"),
-				Pattern.compile("\\/\\*"),
-				Pattern.compile("\\\"((\\\\\\\")|.)*?\\\""),
-				Pattern.compile("\\\'((\\\\\\\')|.)*?\\\'"),
-				Pattern.compile("[A-Za-z][A-Za-z0-9_]+"),
-				Pattern.compile("0x[0-9a-fA-F]+"),
-				Pattern.compile("\\-?\\d*\\.?\\d+[FfLl]?"),
-				Pattern.compile(".")
-			});
-	}
-	@Override
-	protected StyleToken evaluateToken(int index, int match) {
-		switch(match) {
-			case 1:
-				return new StyleToken(index, comment, commentContext);
-			case 2:
-				return new StyleToken(index, comment, multilineCommentContext);
-			case 3:
-			case 4:
-				return new StyleToken(index, string);
-			case 5: {
-				if(KEYWORD_MAP.contains(raw(match)))
-						return new StyleToken(index, keyword);
-				return new StyleToken(index, identifier);
-			}
-			case 6:
-			case 7:
-				return new StyleToken(index, number);
-			default:
-				return new StyleToken(index, null);
-		}
-	}
-
 }

@@ -1,33 +1,91 @@
 package com.xrbpowered.zoomui.richedit;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class TokeniserContext {
+import com.xrbpowered.zoomui.richedit.StyleToken.Style;
 
-	protected Pattern[] patterns;
-	protected Matcher[] matchers = null;
-	
-	public TokeniserContext(Pattern[] patterns) {
-		this.patterns = patterns;
+public abstract class TokeniserContext implements StyleTokenProvider {
+
+	protected class MatcherRule {
+		public Pattern pattern;
+		public StyleTokenProvider tokenProvider; 
+		
+		public Matcher matcher = null;
+		
+		public MatcherRule(Pattern pattern, StyleTokenProvider tokenProvider) {
+			this.pattern = pattern;
+			this.tokenProvider = tokenProvider;
+		}
 	}
 	
-	protected abstract StyleToken evaluateToken(int index, int match);
-	
+	protected ArrayList<MatcherRule> rules = new ArrayList<>();
+
+	protected void add(Pattern pattern, StyleTokenProvider tokenProvider) {
+		rules.add(new MatcherRule(pattern, tokenProvider));
+	}
+
+	protected void add(String regex, StyleTokenProvider tokenProvider) {
+		rules.add(new MatcherRule(Pattern.compile(regex), tokenProvider));
+	}
+
+	protected void add(Pattern pattern, final Style style, final TokeniserContext nextContext) {
+		rules.add(new MatcherRule(pattern, new StyleTokenProvider() {
+			@Override
+			public StyleToken evaluateToken(int index, int match) {
+				return new StyleToken(index, style, nextContext);
+			}
+		}));
+	}
+
+	protected void add(Pattern pattern, final Style style) {
+		add(pattern, style, null);
+	}
+
+	protected void addPlain(Pattern pattern) {
+		add(pattern, null, null);
+	}
+
+	protected void add(String regex, final Style style, final TokeniserContext nextContext) {
+		add(Pattern.compile(regex), style, nextContext);
+	}
+
+	protected void add(String regex, final Style style) {
+		add(Pattern.compile(regex), style, null);
+	}
+
+	protected void addPlain(String regex) {
+		add(Pattern.compile(regex), null, null);
+	}
+
 	public void init(String str) {
-		if(matchers==null) {
-			matchers = new Matcher[patterns.length];
-			for(int i=0; i<matchers.length; i++)
-				matchers[i] = patterns[i].matcher(str);
-		}
-		else {
-			for(int i=0; i<matchers.length; i++)
-				matchers[i].reset(str);
+		for(int i=0; i<rules.size(); i++) {
+			MatcherRule rule = rules.get(i);
+			if(rule.matcher==null) {
+				rule.matcher = rule.pattern.matcher(str);
+			}
+			else {
+				rule.matcher.reset(str);
+			}
 		}
 	}
 	
-	protected String raw(int match) {
-		return matchers[match].group();
+	@Override
+	public StyleToken evaluateToken(int index, int match) {
+		return rules.get(match).tokenProvider.evaluateToken(index, match);
+	}
+	
+	public int ruleCount() {
+		return rules.size();
+	}
+	
+	public Matcher matcher(int match) {
+		return rules.get(match).matcher;
+	}
+	
+	public String raw(int match) {
+		return rules.get(match).matcher.group();
 	}
 	
 	public TokeniserContext nextLineContext() {
@@ -35,12 +93,9 @@ public abstract class TokeniserContext {
 	}
 	
 	public static abstract class SingleLine extends TokeniserContext {
-		public SingleLine(Pattern[] patterns) {
-			super(patterns);
-		}
-		
 		public TokeniserContext nextLineContext() {
 			return null;
 		}
 	}
+
 }
