@@ -26,7 +26,6 @@ public class XmlContext extends TokeniserContext {
 			Pattern.compile("(TODO)|(FIXME)"),
 			Pattern.compile(".")
 		}) {
-		
 		@Override
 		protected StyleToken evaluateToken(int index, int match) {
 			switch(match) {
@@ -44,7 +43,6 @@ public class XmlContext extends TokeniserContext {
 			Pattern.compile("\\]\\]\\>"),
 			Pattern.compile(".")
 		}) {
-		
 		@Override
 		protected StyleToken evaluateToken(int index, int match) {
 			switch(match) {
@@ -60,7 +58,6 @@ public class XmlContext extends TokeniserContext {
 			Pattern.compile("\\>"),
 			Pattern.compile(".")
 		}) {
-		
 		@Override
 		protected StyleToken evaluateToken(int index, int match) {
 			switch(match) {
@@ -71,23 +68,42 @@ public class XmlContext extends TokeniserContext {
 			}
 		}
 	};
-
-	public TokeniserContext tagContext = new TokeniserContext(new Pattern[] {
-			Pattern.compile("\\?\\>"),
-			Pattern.compile("\\/?\\>"),
-			Pattern.compile("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*"),
-			Pattern.compile("\\\".*?\\\""),
-			Pattern.compile("\\\'.*?\\\'"),
+	
+	public TokeniserContext scriptContext = new TokeniserContext(new Pattern[] {
+			Pattern.compile("<\\/script"),
 			Pattern.compile(".")
 		}) {
-		
 		@Override
 		protected StyleToken evaluateToken(int index, int match) {
 			switch(match) {
 				case 0:
-					return new StyleToken(index, xmlTag);
+					return new StyleToken(index, tag, tagContext);
+				default:
+					return new StyleToken(index, null, this);
+			}
+		}
+	};
+
+	public class TagContext extends TokeniserContext {
+		public final TokeniserContext next;
+		public TagContext(TokeniserContext next) {
+			super(new Pattern[] {
+				Pattern.compile("\\?\\>"),
+				Pattern.compile("\\/?\\>"),
+				Pattern.compile("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*"),
+				Pattern.compile("\\\".*?\\\""),
+				Pattern.compile("\\\'.*?\\\'"),
+				Pattern.compile(".")
+			});
+			this.next = next;
+		}
+		@Override
+		protected StyleToken evaluateToken(int index, int match) {
+			switch(match) {
+				case 0:
+					return new StyleToken(index, xmlTag, next);
 				case 1:
-					return new StyleToken(index, tag);
+					return new StyleToken(index, tag, next);
 				case 2:
 					return new StyleToken(index, attributeName, this);
 				case 3:
@@ -97,7 +113,9 @@ public class XmlContext extends TokeniserContext {
 					return new StyleToken(index, null, this);
 			}
 		}
-	};
+	}
+	
+	public TagContext tagContext = new TagContext(null); 
 	
 	public TokeniserContext tagNameContext = new TokeniserContext(new Pattern[] {
 			Pattern.compile("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*"),
@@ -108,7 +126,8 @@ public class XmlContext extends TokeniserContext {
 		protected StyleToken evaluateToken(int index, int match) {
 			switch(match) {
 				case 0:
-					return new StyleToken(index, tag, tagContext);
+					return new StyleToken(index, tag,
+							raw(match).equalsIgnoreCase("script") ? new TagContext(scriptContext) : tagContext);
 				default:
 					return new StyleToken(index, null, tagContext);
 			}

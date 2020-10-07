@@ -24,7 +24,6 @@ public class JavaContext extends TokeniserContext {
 			Pattern.compile("(TODO)|(FIXME)"),
 			Pattern.compile(".")
 		}) {
-		
 		@Override
 		protected StyleToken evaluateToken(int index, int match) {
 			switch(match) {
@@ -42,7 +41,6 @@ public class JavaContext extends TokeniserContext {
 			Pattern.compile("(TODO)|(FIXME)"),
 			Pattern.compile(".")
 		}) {
-		
 		@Override
 		protected StyleToken evaluateToken(int index, int match) {
 			switch(match) {
@@ -84,7 +82,6 @@ public class JavaContext extends TokeniserContext {
 				Pattern.compile(".")
 			});
 	}
-
 	@Override
 	protected StyleToken evaluateToken(int index, int match) {
 		switch(match) {
