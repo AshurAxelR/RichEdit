@@ -39,8 +39,6 @@ public class LineTokeniser {
 	}
 	
 	protected TokeniserContext switchContext(TokeniserContext context, String str) {
-		if(context==null)
-			context = defaultContext;
 		if(context!=null)
 			context.init(str);
 		return context;
@@ -50,6 +48,8 @@ public class LineTokeniser {
 		ArrayList<StyleToken> tokens = new ArrayList<>();
 		
 		index = start;
+		if(context==null)
+			context = defaultContext;
 		context = switchContext(context, str);
 		
 		boolean stop = false;

@@ -2,6 +2,7 @@ package com.xrbpowered.zoomui.richedit.syntax;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.regex.Pattern;
 
 import com.xrbpowered.zoomui.richedit.StyleToken;
 import com.xrbpowered.zoomui.richedit.StyleToken.Style;
@@ -15,67 +16,63 @@ public class XmlContext extends TokeniserContext {
 	public static Style xmlTag = new Style(Color.WHITE, Color.BLACK, Font.BOLD);
 	public static Style cdata = new Style(new Color(0x990000));
 	public static Style cdataTag = new Style(new Color(0x990000), null, Font.BOLD);
-	public static Style doctype = new Style(Color.WHITE, new Color(0xaaaaaa));
+	public static Style doctype = new Style(Color.WHITE, new Color(0xdddddd));
 	public static Style attributeName = new Style(new Color(0x777777));
 	public static Style attributeValue = new Style(new Color(0x0000ff));
 	public static Style entity = new Style(null, new Color(0xfefde0), Font.ITALIC);
 	public static Style todo = new Style(new Color(0x7799bb), null, Font.BOLD);
 
-	public XmlContext() {
-		addPlain("\\s+");
-		add("\\<!\\-\\-", comment, commentContext);
-		add("\\<!\\[CDATA\\[", cdataTag, cdataContext);
-		add("\\<!DOCTYPE", doctype, doctypeContext);
-		add("\\<\\?", xmlTag, tagNameContext);
-		add("\\<\\/?", tag, tagNameContext);
-		add("\\&\\w+\\;", entity);
-		addPlain(".");
-	}
-	
-	private static TokeniserContext commentContext = new TokeniserContext() {{
-		add("\\-\\-\\>", comment);
-		add("(TODO)|(FIXME)", todo, this);
-		add(".", comment, this);
-	}};
-	
-	private static TokeniserContext cdataContext = new TokeniserContext() {{
-		add("\\]\\]\\>", cdataTag);
-		add(".", cdata, this);
-	}};
-
-	private static TokeniserContext doctypeContext = new TokeniserContext() {{
-		add("\\>", doctype);
-		add(".", doctype, this);
-	}};
-	
-	private static TokeniserContext scriptContext = new TokeniserContext() {{
-		add("<\\/script", tag, tagContext);
-		add(".", null, this);
-	}};
-
 	private static class TagContext extends TokeniserContext {
 		public TagContext(TokeniserContext next) {
 			add("\\?\\>", xmlTag, next);
 			add("\\/?\\>", tag, next);
-			add("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*", attributeName, this);
-			add("\\\".*?\\\"", attributeValue, this);
-			add("\\\'.*?\\\'", attributeValue, this);
-			add(".", null, this);
+			add("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*", attributeName);
+			add("\\\".*?\\\"", attributeValue);
+			add("\\\'.*?\\\'", attributeValue);
+			addPlain(".");
 		}
 	}
 	
-	private static TagContext tagContext = new TagContext(null);
-	private static TagContext scriptTagContext = new TagContext(scriptContext);
-	
-	private static TokeniserContext tagNameContext = new TokeniserContext() {{
-		add("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*", new StyleTokenProvider() {
-			@Override
-			public StyleToken evaluateToken(int index, int match) {
-				return new StyleToken(index, tag,
-						raw(match).equalsIgnoreCase("script") ? scriptTagContext : tagContext);
-			}
-		});
-		add(".", null, tagContext);
-	}};
-	
+	public XmlContext() {
+		TagContext tagContext = new TagContext(this);
+		
+		TokeniserContext scriptContext = new JavascriptContext() {{
+			// TODO interrupt in any sub-context of javascript (e.g. inside string literals and comments)
+			rules.add(0, new MatcherRule(Pattern.compile("<\\/script"), token(tag, tagContext)));
+		}};
+		
+		TagContext scriptTagContext = new TagContext(scriptContext);
+
+		TokeniserContext tagNameContext = new TokeniserContext() {{
+			add("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*", new StyleTokenProvider() {
+				@Override
+				public StyleToken evaluateToken(int index, int match) {
+					return new StyleToken(index, tag,
+							raw(match).equalsIgnoreCase("script") ? scriptTagContext : tagContext);
+				}
+			});
+			add(".", null, tagContext);
+		}};
+		
+		addPlain("\\s+");
+		add("\\<!\\-\\-", comment, new TokeniserContext() {{
+			add("\\-\\-\\>", comment, XmlContext.this);
+			add("(TODO)|(FIXME)", todo);
+			add(".", comment);
+		}});
+		add("\\<!\\[CDATA\\[", cdataTag, new TokeniserContext() {{
+			add("\\]\\]\\>", cdataTag, XmlContext.this);
+			add(".", cdata);
+		}});
+		add("\\<!DOCTYPE", doctype, new TokeniserContext() {{
+			add("\\>", doctype, XmlContext.this);
+			add(".", doctype);
+		}});
+		add("\\<\\?", xmlTag, tagNameContext);
+		add("\\<\\/[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*", tag, tagContext);
+		add("\\<", tag, tagNameContext);
+		add("\\&[#\\w]+\\;", entity);
+		addPlain(".");
+	}
+
 }

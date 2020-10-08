@@ -21,7 +21,21 @@ public abstract class TokeniserContext implements StyleTokenProvider {
 	}
 	
 	protected ArrayList<MatcherRule> rules = new ArrayList<>();
+	protected TokeniserContext nextLineContext;
+	
+	public TokeniserContext() {
+		nextLineContext = this;
+	}
 
+	protected StyleTokenProvider token(final Style style, final TokeniserContext nextContext) {
+		return new StyleTokenProvider() {
+			@Override
+			public StyleToken evaluateToken(int index, int match) {
+				return new StyleToken(index, style, nextContext);
+			}
+		};
+	}
+	
 	protected void add(Pattern pattern, StyleTokenProvider tokenProvider) {
 		rules.add(new MatcherRule(pattern, tokenProvider));
 	}
@@ -31,20 +45,15 @@ public abstract class TokeniserContext implements StyleTokenProvider {
 	}
 
 	protected void add(Pattern pattern, final Style style, final TokeniserContext nextContext) {
-		rules.add(new MatcherRule(pattern, new StyleTokenProvider() {
-			@Override
-			public StyleToken evaluateToken(int index, int match) {
-				return new StyleToken(index, style, nextContext);
-			}
-		}));
+		rules.add(new MatcherRule(pattern, token(style, nextContext)));
 	}
 
 	protected void add(Pattern pattern, final Style style) {
-		add(pattern, style, null);
+		add(pattern, style, this);
 	}
 
 	protected void addPlain(Pattern pattern) {
-		add(pattern, null, null);
+		add(pattern, null, this);
 	}
 
 	protected void add(String regex, final Style style, final TokeniserContext nextContext) {
@@ -52,22 +61,19 @@ public abstract class TokeniserContext implements StyleTokenProvider {
 	}
 
 	protected void add(String regex, final Style style) {
-		add(Pattern.compile(regex), style, null);
+		add(Pattern.compile(regex), style, this);
 	}
 
 	protected void addPlain(String regex) {
-		add(Pattern.compile(regex), null, null);
+		add(Pattern.compile(regex), null, this);
 	}
 
 	public void init(String str) {
-		for(int i=0; i<rules.size(); i++) {
-			MatcherRule rule = rules.get(i);
-			if(rule.matcher==null) {
+		for(MatcherRule rule : rules) {
+			if(rule.matcher==null)
 				rule.matcher = rule.pattern.matcher(str);
-			}
-			else {
+			else
 				rule.matcher.reset(str);
-			}
 		}
 	}
 	
@@ -89,13 +95,7 @@ public abstract class TokeniserContext implements StyleTokenProvider {
 	}
 	
 	public TokeniserContext nextLineContext() {
-		return this;
-	}
-	
-	public static abstract class SingleLine extends TokeniserContext {
-		public TokeniserContext nextLineContext() {
-			return null;
-		}
+		return nextLineContext;
 	}
 
 }
