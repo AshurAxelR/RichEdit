@@ -32,7 +32,7 @@ public class JavascriptContext extends InterruptibleContext {
 	}
 	
 	public JavascriptContext() {
-		this((InterruptionRules)null);
+		this(null);
 	}
 
 	public JavascriptContext(InterruptionRules inter) {

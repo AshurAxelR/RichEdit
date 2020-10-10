@@ -2,8 +2,12 @@ package com.xrbpowered.zoomui.richedit.syntax;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import com.xrbpowered.zoomui.richedit.InterruptibleContext;
+import com.xrbpowered.zoomui.richedit.StyleToken;
+import com.xrbpowered.zoomui.richedit.StyleTokenProvider;
 import com.xrbpowered.zoomui.richedit.StyleToken.Style;
 import com.xrbpowered.zoomui.richedit.TokeniserContext;
 
@@ -16,6 +20,7 @@ public class CssContext extends InterruptibleContext {
 	public static Style directive = new Style(new Color(0x007777), null, Font.BOLD);
 	public static Style propertyName = new Style(new Color(0x0077ff));
 	public static Style identifier = new Style(new Color(0x555555));
+	public static Style important = new Style(new Color(0xff0000), null, Font.ITALIC);
 	public static Style number = new Style(new Color(0x000077));
 	public static Style string = new Style(new Color(0x0000ff));
 	public static Style stringEscape = new Style(new Color(0x7799ff));
@@ -36,16 +41,15 @@ public class CssContext extends InterruptibleContext {
 	private static class ValueContext extends InterruptibleContext {
 		public ValueContext(InterruptionRules inter) {
 			super(inter);
-			addCommon(inter, this);
-			add("\\-?[0-9]+(%|([A-Za-z]+))?", number);
-			add("#[0-9A-Fa-f]+", number);
+			add("\\!important", important);
 			add("[A-Za-z_\\-][A-Za-z0-9_\\-]*", identifier);
+			addCommon(inter, this);
 			addPlain(".");
 		}
 	}
 	
 	public CssContext() {
-		this((InterruptionRules)null);
+		this(null);
 	}
 
 	public CssContext(InterruptionRules inter) {
@@ -67,10 +71,17 @@ public class CssContext extends InterruptibleContext {
 		add("\\:\\:?[A-Za-z_][A-Za-z0-9_\\-]*", selPseudoclass);
 		add("\\.[A-Za-z_][A-Za-z0-9_\\-]*", selClass);
 		add("#[A-Za-z_][A-Za-z0-9_\\-]*", selId);
-		add("@[A-Za-z_][A-Za-z0-9_\\-]*", directive, new ValueContext(new InterruptionRules(
-				inter,
-				new InterruptionRule("[\\{;]", null, CssContext.this)
-			)));
+		add("@[A-Za-z_][A-Za-z0-9_\\-]*", new StyleTokenProvider() {
+			@Override
+			public StyleToken evaluateToken(int index, int match) {
+				TokeniserContext inner = nestedDirectives.contains(raw(match).toLowerCase()) ? CssContext.this : propertyNameContext;
+				return new StyleToken(index, directive, new ValueContext(new InterruptionRules(
+					inter,
+					new InterruptionRule("\\{", null, inner),
+					new InterruptionRule(";", null, CssContext.this)
+				)));
+			}
+		});
 		add("\\{", null, propertyNameContext);
 		add("\\[", null, new ValueContext(new InterruptionRules(
 				inter,
@@ -91,11 +102,19 @@ public class CssContext extends InterruptibleContext {
 			add("(TODO)|(FIXME)", todo);
 			add(".", comment);
 		}});
+		ctx.add("\\-?[0-9]+(%|([A-Za-z]+))?", number);
+		ctx.add("#[0-9A-Fa-f]+", number);
 		ctx.add("\\\"", string, new StringContext(inter, "\\\"", ctx));
 		ctx.add("\\\'", string, new StringContext(inter, "\\\'", ctx));
 		ctx.add("<!\\-\\-", htmlComment);
 		ctx.add("\\-\\->", htmlComment);
 	}
 	
+	private static final HashSet<String> nestedDirectives = new HashSet<>();
+	static {
+		nestedDirectives.addAll(Arrays.asList(new String[] {
+			"@font-feature-values", "@keyframes", "@media", "@supports"
+		}));
+	}
 
 }

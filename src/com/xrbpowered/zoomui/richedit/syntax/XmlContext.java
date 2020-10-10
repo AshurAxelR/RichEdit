@@ -45,7 +45,7 @@ public class XmlContext extends InterruptibleContext {
 	}
 	
 	public XmlContext() {
-		this((InterruptionRules)null);
+		this(null);
 	}
 
 	public XmlContext(InterruptionRules inter) {

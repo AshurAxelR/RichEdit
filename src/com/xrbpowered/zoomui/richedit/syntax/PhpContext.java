@@ -26,7 +26,6 @@ public class PhpContext extends XmlContext {
 
 	private static class StringContext extends TokeniserContext {
 		public StringContext(String delim, boolean single, TokeniserContext next) {
-			nextLineContext = next;
 			add(delim, string, next);
 			if(single) {
 				add("\\\\[\\\\\\']", stringEscape);

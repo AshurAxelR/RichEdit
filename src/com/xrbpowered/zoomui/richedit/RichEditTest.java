@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIElement;
@@ -40,7 +41,7 @@ public class RichEditTest {
 	
 	public static String loadString(File file) {
 		try {
-			return new String(loadBytes(new FileInputStream(file)));
+			return new String(loadBytes(new FileInputStream(file)), StandardCharsets.UTF_8);
 		} catch(IOException e) {
 			e.printStackTrace();
 			return "";
