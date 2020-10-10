@@ -26,7 +26,7 @@ public class JavascriptContext extends InterruptibleContext {
 			super(inter);
 			nextLineContext = next;
 			add(delim, string, next);
-			add("\\\\[tbnrfv\\\\\\\"\\\\']", string);
+			add("\\\\[tbnrfv\\\\\\\"\\']", string);
 			add(".", string);
 		}
 	}
@@ -51,7 +51,7 @@ public class JavascriptContext extends InterruptibleContext {
 		add("\\\"", string, new StringContext(inter, "\\\"", this));
 		add("\\\'", string, new StringContext(inter, "\\\'", this));
 		add("\\/((\\\\\\/)|.)*?\\/", regex);
-		add("[A-Za-z][A-Za-z0-9_]+", new StyleTokenProvider() {
+		add("[A-Za-z][A-Za-z0-9_]*", new StyleTokenProvider() {
 			@Override
 			public StyleToken evaluateToken(int index, int match) {
 				return new StyleToken(index,

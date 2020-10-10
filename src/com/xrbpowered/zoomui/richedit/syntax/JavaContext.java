@@ -24,7 +24,7 @@ public class JavaContext extends TokeniserContext {
 		public StringContext(String delim, TokeniserContext next) {
 			nextLineContext = next;
 			add(delim, string, next);
-			add("\\\\([tbnrf\\\\\\\"\\\\']|(u[0-9A-Fa-f]{4})|([0-7]{1,3}))", stringEscape);
+			add("\\\\([tbnrf\\\\\\\"\\']|(u[0-9A-Fa-f]{4})|([0-7]{1,3}))", stringEscape);
 			add(".", string);
 		}
 	}
@@ -43,7 +43,7 @@ public class JavaContext extends TokeniserContext {
 		}});
 		add("\\\"", string, new StringContext("\\\"", this));
 		add("\\\'", string, new StringContext("\\\'", this));
-		add("[A-Za-z][A-Za-z0-9_]+", new StyleTokenProvider() {
+		add("[A-Za-z][A-Za-z0-9_]*", new StyleTokenProvider() {
 			@Override
 			public StyleToken evaluateToken(int index, int match) {
 				return new StyleToken(index,

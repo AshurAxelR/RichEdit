@@ -22,8 +22,11 @@ public class InterruptibleContext extends TokeniserContext {
 			this(Pattern.compile(regex), style, nextContext);
 		}
 		
-		public MatcherRule matcherRule() {
-			return new MatcherRule(pattern, StyleTokenProvider.token(style, nextContext));
+		public MatcherRule matcherRule(TokeniserContext current) {
+			TokeniserContext context = nextContext;
+			if(context instanceof PushContext)
+				context = ((PushContext) context).push(current);
+			return new MatcherRule(pattern, StyleTokenProvider.token(style, context));
 		}
 	}
 	
@@ -61,6 +64,10 @@ public class InterruptibleContext extends TokeniserContext {
 		}
 	}
 	
+	public static abstract class PushContext extends TokeniserContext {
+		public abstract PushContext push(TokeniserContext popContext);
+	}
+	
 	public InterruptibleContext() {
 		this((InterruptionRules)null);
 	}
@@ -68,7 +75,7 @@ public class InterruptibleContext extends TokeniserContext {
 	public InterruptibleContext(InterruptionRules inter) {
 		if(inter!=null) {
 			for(InterruptionRule r : inter.rules)
-				this.rules.add(r.matcherRule());
+				this.rules.add(r.matcherRule(this));
 		}
 	}
 

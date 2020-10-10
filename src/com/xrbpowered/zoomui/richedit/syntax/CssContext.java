@@ -28,7 +28,7 @@ public class CssContext extends InterruptibleContext {
 			super(inter);
 			nextLineContext = next;
 			add(delim, string, next);
-			add("\\\\([\\\\\\\"\\\\']|([0-9A-Fa-f]+))", stringEscape);
+			add("\\\\([\\\\\\\"\\']|([0-9A-Fa-f]{1,6}))", stringEscape);
 			add(".", string);
 		}
 	}
