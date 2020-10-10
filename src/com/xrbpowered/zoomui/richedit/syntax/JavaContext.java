@@ -12,13 +12,23 @@ import com.xrbpowered.zoomui.richedit.TokeniserContext;
 
 public class JavaContext extends TokeniserContext {
 
-	public static Style comment = new Style(new Color(0x007744));
-	public static Style string = new Style(new Color(0x0000ff));
 	public static Style keyword = new Style(new Color(0x770055), null, Font.BOLD);
-	public static Style number = new Style(new Color(0x777777));
 	public static Style identifier = new Style(null);
+	public static Style number = new Style(new Color(0x777777));
+	public static Style string = new Style(new Color(0x0000ff));
+	public static Style stringEscape = new Style(new Color(0x7799ff));
+	public static Style comment = new Style(new Color(0x007744));
 	public static Style todo = new Style(new Color(0x7799bb), null, Font.BOLD);
 
+	private static class StringContext extends TokeniserContext {
+		public StringContext(String delim, TokeniserContext next) {
+			nextLineContext = next;
+			add(delim, string, next);
+			add("\\\\([tbnrf\\\\\\\"\\\\']|(u[0-9A-Fa-f]{4})|([0-7]{1,3}))", stringEscape);
+			add(".", string);
+		}
+	}
+	
 	public JavaContext() {
 		addPlain("\\s+");
 		add("\\/\\/", comment,  new TokeniserContext() {{
@@ -31,8 +41,8 @@ public class JavaContext extends TokeniserContext {
 			add("(TODO)|(FIXME)", todo);
 			add(".", comment);
 		}});
-		add("\\\"((\\\\\\\")|.)*?\\\"", string);
-		add("\\\'((\\\\\\\')|.)*?\\\'", string);
+		add("\\\"", string, new StringContext("\\\"", this));
+		add("\\\'", string, new StringContext("\\\'", this));
 		add("[A-Za-z][A-Za-z0-9_]+", new StyleTokenProvider() {
 			@Override
 			public StyleToken evaluateToken(int index, int match) {

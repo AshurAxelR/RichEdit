@@ -14,6 +14,7 @@ import com.xrbpowered.zoomui.GraphAssist;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.UIModalWindow;
 import com.xrbpowered.zoomui.UIModalWindow.ResultHandler;
+import com.xrbpowered.zoomui.richedit.syntax.CssContext;
 import com.xrbpowered.zoomui.richedit.syntax.JavaContext;
 import com.xrbpowered.zoomui.richedit.syntax.JavascriptContext;
 import com.xrbpowered.zoomui.richedit.syntax.XmlContext;
@@ -171,7 +172,9 @@ public class RichEditTest {
 				text.editor.setText(loadString(result));
 				String filename = result.getName().toLowerCase();
 				LineTokeniser t;
-				if(filename.endsWith(".java"))
+				if(filename.endsWith(".css"))
+					t = new LineTokeniser(new CssContext());
+				else if(filename.endsWith(".java"))
 					t = new LineTokeniser(new JavaContext());
 				else if(filename.endsWith(".js"))
 					t = new LineTokeniser(new JavascriptContext());
@@ -225,6 +228,14 @@ public class RichEditTest {
 			}
 		};
 		new UIMenuSeparator(syntaxMenu);
+		new UIMenuItem(syntaxMenu, "CSS") {
+			@Override
+			public void onAction() {
+				text.editor.setTokeniser(new LineTokeniser(new CssContext()));
+				text.editor.resetAllLines();
+				text.repaint();
+			}
+		};
 		new UIMenuItem(syntaxMenu, "Java") {
 			@Override
 			public void onAction() {

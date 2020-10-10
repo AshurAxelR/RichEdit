@@ -8,7 +8,7 @@ import com.xrbpowered.zoomui.richedit.StyleToken.Style;
 
 public abstract class TokeniserContext implements StyleTokenProvider {
 
-	protected class MatcherRule {
+	protected static class MatcherRule {
 		public Pattern pattern;
 		public StyleTokenProvider tokenProvider; 
 		
@@ -27,44 +27,35 @@ public abstract class TokeniserContext implements StyleTokenProvider {
 		nextLineContext = this;
 	}
 
-	protected StyleTokenProvider token(final Style style, final TokeniserContext nextContext) {
-		return new StyleTokenProvider() {
-			@Override
-			public StyleToken evaluateToken(int index, int match) {
-				return new StyleToken(index, style, nextContext);
-			}
-		};
-	}
-	
-	protected void add(Pattern pattern, StyleTokenProvider tokenProvider) {
+	public void add(Pattern pattern, StyleTokenProvider tokenProvider) {
 		rules.add(new MatcherRule(pattern, tokenProvider));
 	}
 
-	protected void add(String regex, StyleTokenProvider tokenProvider) {
+	public void add(String regex, StyleTokenProvider tokenProvider) {
 		rules.add(new MatcherRule(Pattern.compile(regex), tokenProvider));
 	}
 
-	protected void add(Pattern pattern, final Style style, final TokeniserContext nextContext) {
-		rules.add(new MatcherRule(pattern, token(style, nextContext)));
+	public void add(Pattern pattern, final Style style, final TokeniserContext nextContext) {
+		rules.add(new MatcherRule(pattern, StyleTokenProvider.token(style, nextContext)));
 	}
 
-	protected void add(Pattern pattern, final Style style) {
+	public void add(Pattern pattern, final Style style) {
 		add(pattern, style, this);
 	}
 
-	protected void addPlain(Pattern pattern) {
+	public void addPlain(Pattern pattern) {
 		add(pattern, null, this);
 	}
 
-	protected void add(String regex, final Style style, final TokeniserContext nextContext) {
+	public void add(String regex, final Style style, final TokeniserContext nextContext) {
 		add(Pattern.compile(regex), style, nextContext);
 	}
 
-	protected void add(String regex, final Style style) {
+	public void add(String regex, final Style style) {
 		add(Pattern.compile(regex), style, this);
 	}
 
-	protected void addPlain(String regex) {
+	public void addPlain(String regex) {
 		add(Pattern.compile(regex), null, this);
 	}
 

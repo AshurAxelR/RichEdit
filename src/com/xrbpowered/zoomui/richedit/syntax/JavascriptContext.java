@@ -5,12 +5,13 @@ import java.awt.Font;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import com.xrbpowered.zoomui.richedit.InterruptibleContext;
 import com.xrbpowered.zoomui.richedit.StyleToken;
 import com.xrbpowered.zoomui.richedit.StyleToken.Style;
 import com.xrbpowered.zoomui.richedit.StyleTokenProvider;
 import com.xrbpowered.zoomui.richedit.TokeniserContext;
 
-public class JavascriptContext extends TokeniserContext {
+public class JavascriptContext extends InterruptibleContext {
 
 	public static Style comment = new Style(new Color(0x007744));
 	public static Style string = new Style(new Color(0x777777));
@@ -20,20 +21,35 @@ public class JavascriptContext extends TokeniserContext {
 	public static Style identifier = new Style(null);
 	public static Style todo = new Style(new Color(0x7799bb), null, Font.BOLD);
 
+	private static class StringContext extends InterruptibleContext {
+		public StringContext(InterruptionRules inter, String delim, TokeniserContext next) {
+			super(inter);
+			nextLineContext = next;
+			add(delim, string, next);
+			add("\\\\[tbnrfv\\\\\\\"\\\\']", string);
+			add(".", string);
+		}
+	}
+	
 	public JavascriptContext() {
+		this((InterruptionRules)null);
+	}
+
+	public JavascriptContext(InterruptionRules inter) {
+		super(inter);
 		addPlain("\\s+");
-		add("\\/\\/", comment, new TokeniserContext() {{
+		add("\\/\\/", comment, new InterruptibleContext(inter) {{
 			nextLineContext = JavascriptContext.this;
 			add("(TODO)|(FIXME)", todo);
 			add(".", comment);
 		}});
-		add("\\/\\*", comment, new TokeniserContext() {{
+		add("\\/\\*", comment, new InterruptibleContext(inter) {{
 			add("\\*\\/", comment, JavascriptContext.this);
 			add("(TODO)|(FIXME)", todo);
 			add(".", comment);
 		}});
-		add("\\\"((\\\\\\\")|.)*?\\\"", string);
-		add("\\\'((\\\\\\\')|.)*?\\\'", string);
+		add("\\\"", string, new StringContext(inter, "\\\"", this));
+		add("\\\'", string, new StringContext(inter, "\\\'", this));
 		add("\\/((\\\\\\/)|.)*?\\/", regex);
 		add("[A-Za-z][A-Za-z0-9_]+", new StyleTokenProvider() {
 			@Override

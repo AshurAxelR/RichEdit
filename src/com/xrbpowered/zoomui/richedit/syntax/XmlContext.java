@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.regex.Pattern;
 
+import com.xrbpowered.zoomui.richedit.InterruptibleContext.InterruptionRule;
+import com.xrbpowered.zoomui.richedit.InterruptibleContext.InterruptionRules;
 import com.xrbpowered.zoomui.richedit.StyleToken;
 import com.xrbpowered.zoomui.richedit.StyleToken.Style;
 import com.xrbpowered.zoomui.richedit.StyleTokenProvider;
@@ -36,19 +38,22 @@ public class XmlContext extends TokeniserContext {
 	public XmlContext() {
 		TagContext tagContext = new TagContext(this);
 		
-		TokeniserContext scriptContext = new JavascriptContext() {{
-			// TODO interrupt in any sub-context of javascript (e.g. inside string literals and comments)
-			rules.add(0, new MatcherRule(Pattern.compile("<\\/script"), token(tag, tagContext)));
-		}};
-		
-		TagContext scriptTagContext = new TagContext(scriptContext);
+		TokeniserContext scriptContext = new JavascriptContext(new InterruptionRules(
+			new InterruptionRule(Pattern.compile("<\\/script"), tag, tagContext)
+		));
+
+		TokeniserContext styleContext = new CssContext(new InterruptionRules(
+				new InterruptionRule(Pattern.compile("<\\/style"), tag, tagContext)
+			));
 
 		TokeniserContext tagNameContext = new TokeniserContext() {{
 			add("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*", new StyleTokenProvider() {
 				@Override
 				public StyleToken evaluateToken(int index, int match) {
 					return new StyleToken(index, tag,
-							raw(match).equalsIgnoreCase("script") ? scriptTagContext : tagContext);
+							raw(match).equalsIgnoreCase("script") ? new TagContext(scriptContext)
+								: raw(match).equalsIgnoreCase("style") ? new TagContext(styleContext)
+								: tagContext);
 				}
 			});
 			add(".", null, tagContext);
