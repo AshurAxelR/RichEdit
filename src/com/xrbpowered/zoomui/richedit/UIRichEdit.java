@@ -38,8 +38,8 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 	protected LineTokeniser tokeniser = new LineTokeniser(null);
 	protected int xmargin; 
 	
-	public UIRichEdit(UIPanView parent, boolean singleLine) {
-		super(parent, singleLine);
+	public UIRichEdit(UIPanView parent) {
+		super(parent, false);
 	}
 	
 	@Override

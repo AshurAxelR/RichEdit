@@ -13,7 +13,7 @@ public class UIRichEditArea extends UIScrollContainer {
 	}
 	
 	protected UIRichEdit createEditor() {
-		return new UIRichEdit(getView(), false);
+		return new UIRichEdit(getView());
 	}
 	
 	@Override
