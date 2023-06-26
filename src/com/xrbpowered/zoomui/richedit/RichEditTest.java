@@ -111,8 +111,7 @@ public class RichEditTest {
 	}
 	
 	private static void createOpenDialog() {
-		openDlg = SwingWindowFactory.use().createModal("Open file", 840, 480, true, null);
-		openDlg.onResult = new ResultHandler<File>() {
+		openDlg = UIFileBrowser.createDialog("Open file", new ResultHandler<File>() {
 			@Override
 			public void onResult(File result) {
 				setDocument(result);
@@ -136,13 +135,11 @@ public class RichEditTest {
 			@Override
 			public void onCancel() {
 			}
-		};
-		new UIFileBrowser(openDlg.getContainer(), openDlg.wrapInResultHandler());
+		});
 	}
 	
 	private static void createSaveDialog() {
-		saveDlg = SwingWindowFactory.use().createModal("Save file", 840, 480, true, null);
-		saveDlg.onResult = new ResultHandler<File>() {
+		saveDlg = UIFileBrowser.createDialog("Save file", new ResultHandler<File>() {
 			@Override
 			public void onResult(File result) {
 				if(result!=null) {
@@ -153,8 +150,7 @@ public class RichEditTest {
 			@Override
 			public void onCancel() {
 			}
-		};
-		new UIFileBrowser(saveDlg.getContainer(), saveDlg.wrapInResultHandler());
+		});
 	}
 	
 	private static void addFileMenuItems(final UIMenu menu) {
