@@ -106,8 +106,10 @@ public class RichEditTest {
 				g.hborder(this, GraphAssist.TOP, colorBorder);
 			}
 		};
+		text.editor.hideSelection = false;
 		text.editor.setFont(new Font("Verdana", Font.PLAIN, 10), 10f);
 		text.editor.setTokeniser(null);
+		text.getBase().setFocus(text.editor);
 	}
 	
 	private static void createOpenDialog() {
