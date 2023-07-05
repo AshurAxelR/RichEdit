@@ -109,7 +109,7 @@ public class RichEditTest {
 		text.editor.hideSelection = false;
 		text.editor.setFont(new Font("Verdana", Font.PLAIN, 10), 10f);
 		text.editor.setTokeniser(null);
-		text.getBase().setFocus(text.editor);
+		text.getBase().tabIndex().setStickyFocus(text.editor);
 	}
 	
 	private static void createOpenDialog() {
