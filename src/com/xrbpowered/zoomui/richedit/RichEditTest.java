@@ -1,5 +1,7 @@
 package com.xrbpowered.zoomui.richedit;
 
+import static com.xrbpowered.zoomui.MouseInfo.RIGHT;
+
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -15,6 +17,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import com.xrbpowered.zoomui.GraphAssist;
+import com.xrbpowered.zoomui.MouseInfo;
 import com.xrbpowered.zoomui.UIContainer;
 import com.xrbpowered.zoomui.UIElement;
 import com.xrbpowered.zoomui.UIModalWindow;
@@ -88,16 +91,16 @@ public class RichEditTest {
 			protected UIRichEdit createEditor() {
 				return new UIRichEdit(getView()) {
 					@Override
-					public boolean onMouseUp(float x, float y, Button button, int mods, UIElement initiator) {
-						if(button==Button.right) {
-							float bx = localToBaseX(x);
-							float by = localToBaseY(y);
+					public boolean onMouseUp(float x, float y, MouseInfo mouse, UIElement initiator) {
+						if(mouse.eventButton==RIGHT) {
+							float bx = localToRootX(x);
+							float by = localToRootY(y);
 							editor.checkPushHistory();
 							popup.show(frame, bx, by);
 							return true;
 						}
 						else
-							return super.onMouseUp(x, y, button, mods, initiator);
+							return super.onMouseUp(x, y, mouse, initiator);
 					}
 				};
 			}
@@ -109,7 +112,7 @@ public class RichEditTest {
 		text.editor.hideSelection = false;
 		text.editor.setFont(new Font("Verdana", Font.PLAIN, 10), 10f);
 		text.editor.setTokeniser(null);
-		text.getBase().tabIndex().setStickyFocus(text.editor);
+		text.getRoot().tabIndex().setStickyFocus(text.editor);
 	}
 	
 	private static void createOpenDialog() {

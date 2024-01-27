@@ -18,7 +18,7 @@ public class UIRichEditArea extends UIScrollContainer {
 	
 	@Override
 	protected float layoutView() {
-		editor.setLocation(0, 0);
+		editor.setPosition(0, 0);
 		editor.updateSize();
 		return editor.getHeight();
 	}
