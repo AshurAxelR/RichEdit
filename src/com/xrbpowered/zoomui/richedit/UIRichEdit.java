@@ -69,14 +69,14 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 		while(d<lines.size())
 			d = d*10+9;
 		
-		xmargin = fm[0].stringWidth(Integer.toString(d))+(int)(8/pixelScale);
-		x0 = xmargin+(int)(4/pixelScale);
+		xmargin = fm[0].stringWidth(Integer.toString(d))+(int)(8/pixelSize);
+		x0 = xmargin+(int)(4/pixelSize);
 	}
 	
 	protected void fillRemainder(GraphAssist g, int y) {
 		super.fillRemainder(g, y);
 		g.fillRect(0, y-lineHeight+descent, xmargin, maxy-y+lineHeight-descent, colorMargin);
-		g.setStroke(1/pixelScale);
+		g.setStroke(1/pixelSize);
 		g.line(xmargin, y-lineHeight+descent, xmargin, maxy, colorMarginText);
 	}
 	
@@ -93,11 +93,11 @@ public class UIRichEdit extends UITextEditBase<UIRichEdit.Line> {
 		}
 		
 		g.fillRect(0, y-lineHeight+descent, xmargin, lineHeight, colorMargin);
-		g.setStroke(1/pixelScale);
+		g.setStroke(1/pixelSize);
 		g.line(xmargin, y-lineHeight+descent, xmargin, y+descent, colorMarginText);
 		g.setFont(fonts[0]);
 		g.setColor(colorMarginText);
-		g.drawString(Integer.toString(lineIndex+1), xmargin-4/pixelScale, y, GraphAssist.RIGHT, GraphAssist.BOTTOM);
+		g.drawString(Integer.toString(lineIndex+1), xmargin-4/pixelSize, y, GraphAssist.RIGHT, GraphAssist.BOTTOM);
 		
 		super.drawLine(g, lineIndex, lineStart, lineEnd, y, bg, drawCursor, line);
 	}
