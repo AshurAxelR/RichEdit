@@ -45,9 +45,9 @@ public class JavaContext extends TokeniserContext {
 		add("\\\'", string, new StringContext("\\\'", this));
 		add("[A-Za-z][A-Za-z0-9_]*", new StyleTokenProvider() {
 			@Override
-			public StyleToken evaluateToken(int index, int match) {
-				return new StyleToken(index,
-						keywords.contains(raw(match)) ? keyword : identifier,
+			public StyleToken evaluateToken(int start, String raw) {
+				return new StyleToken(start,
+						keywords.contains(raw) ? keyword : identifier,
 						JavaContext.this);
 			}
 		});

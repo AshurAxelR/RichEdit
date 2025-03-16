@@ -73,9 +73,9 @@ public class CssContext extends InterruptibleContext {
 		add("#[A-Za-z_][A-Za-z0-9_\\-]*", selId);
 		add("@[A-Za-z_][A-Za-z0-9_\\-]*", new StyleTokenProvider() {
 			@Override
-			public StyleToken evaluateToken(int index, int match) {
-				TokeniserContext inner = nestedDirectives.contains(raw(match).toLowerCase()) ? CssContext.this : propertyNameContext;
-				return new StyleToken(index, directive, new ValueContext(new InterruptionRules(
+			public StyleToken evaluateToken(int start, String raw) {
+				TokeniserContext inner = nestedDirectives.contains(raw.toLowerCase()) ? CssContext.this : propertyNameContext;
+				return new StyleToken(start, directive, new ValueContext(new InterruptionRules(
 					inter,
 					new InterruptionRule("\\{", null, inner),
 					new InterruptionRule(";", null, CssContext.this)

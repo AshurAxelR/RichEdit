@@ -60,9 +60,9 @@ public class PhpContext extends XmlContext {
 			add("\\$[A-Za-z_][A-Za-z0-9_]*", variable);
 			add("[A-Za-z_][A-Za-z0-9_]*", new StyleTokenProvider() {
 				@Override
-				public StyleToken evaluateToken(int index, int match) {
-					return new StyleToken(index,
-							keywords.contains(raw(match).toLowerCase()) ? keyword : identifier,
+				public StyleToken evaluateToken(int start, String raw) {
+					return new StyleToken(start,
+							keywords.contains(raw.toLowerCase()) ? keyword : identifier,
 							PhpInsertContext.this);
 				}
 			});

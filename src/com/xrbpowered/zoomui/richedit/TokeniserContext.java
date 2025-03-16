@@ -6,17 +6,28 @@ import java.util.regex.Pattern;
 
 import com.xrbpowered.zoomui.richedit.StyleToken.Style;
 
-public abstract class TokeniserContext implements StyleTokenProvider {
+public abstract class TokeniserContext {
 
 	protected static class MatcherRule {
 		public Pattern pattern;
 		public StyleTokenProvider tokenProvider; 
 		
-		public Matcher matcher = null;
+		private Matcher matcher = null;
 		
 		public MatcherRule(Pattern pattern, StyleTokenProvider tokenProvider) {
 			this.pattern = pattern;
 			this.tokenProvider = tokenProvider;
+		}
+		
+		public void init(String str) {
+			if(matcher==null)
+				matcher = pattern.matcher(str);
+			else
+				matcher.reset(str);
+		}
+		
+		public Matcher getMatcher() {
+			return matcher;
 		}
 	}
 	
@@ -60,29 +71,8 @@ public abstract class TokeniserContext implements StyleTokenProvider {
 	}
 
 	public void init(String str) {
-		for(MatcherRule rule : rules) {
-			if(rule.matcher==null)
-				rule.matcher = rule.pattern.matcher(str);
-			else
-				rule.matcher.reset(str);
-		}
-	}
-	
-	@Override
-	public StyleToken evaluateToken(int index, int match) {
-		return rules.get(match).tokenProvider.evaluateToken(index, match);
-	}
-	
-	public int ruleCount() {
-		return rules.size();
-	}
-	
-	public Matcher matcher(int match) {
-		return rules.get(match).matcher;
-	}
-	
-	public String raw(int match) {
-		return rules.get(match).matcher.group();
+		for(MatcherRule rule : rules)
+			rule.init(str);
 	}
 	
 	public TokeniserContext nextLineContext() {

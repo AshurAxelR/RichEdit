@@ -65,10 +65,10 @@ public class XmlContext extends InterruptibleContext {
 		TokeniserContext tagNameContext = new TokeniserContext() {{
 			add("[A-Za-z_][A-Za-z0-9_\\:\\-\\.]*", new StyleTokenProvider() {
 				@Override
-				public StyleToken evaluateToken(int index, int match) {
-					return new StyleToken(index, tag,
-							raw(match).equalsIgnoreCase("script") ? new TagContext(inter, scriptContext)
-								: raw(match).equalsIgnoreCase("style") ? new TagContext(inter, styleContext)
+				public StyleToken evaluateToken(int start, String raw) {
+					return new StyleToken(start, tag,
+							raw.equalsIgnoreCase("script") ? new TagContext(inter, scriptContext)
+								: raw.equalsIgnoreCase("style") ? new TagContext(inter, styleContext)
 								: tagContext);
 				}
 			});

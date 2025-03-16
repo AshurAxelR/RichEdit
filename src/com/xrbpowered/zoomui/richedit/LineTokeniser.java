@@ -3,6 +3,8 @@ package com.xrbpowered.zoomui.richedit;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 
+import com.xrbpowered.zoomui.richedit.TokeniserContext.MatcherRule;
+
 public class LineTokeniser {
 
 	public final TokeniserContext defaultContext;
@@ -19,19 +21,18 @@ public class LineTokeniser {
 		if(index>=end)
 			return null;
 		
-		int matchers = context.ruleCount();
-		int match = -1;
-		for(int i=0; i<matchers; i++) {
-			Matcher m = context.matcher(i);
+		MatcherRule match = null;
+		for(MatcherRule rule : context.rules) {
+			Matcher m = rule.getMatcher();
 			m.region(index, end);
 			if(m.lookingAt()) {
-				match = i;
+				match = rule;
 				break;
 			}
 		}
-		if(match>=0) {
-			StyleToken t = context.evaluateToken(index, match);
-			index = context.matcher(match).end();
+		if(match!=null) {
+			StyleToken t = match.tokenProvider.evaluateToken(index, match.getMatcher().group());
+			index = match.getMatcher().end();
 			return t;
 		}
 		else
